@@ -1,0 +1,4022 @@
+diff --git a/.gitignore b/.gitignore
+index 8e13186..1f9039f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -5,4 +5,7 @@ tmp/
+ .sass-cache/
+ *.swp
+ *.swo
+-*.sublime-*
+\ No newline at end of file
++*.sublime-*
++config/database.yml
++config/database.yaml
++config/environments/secret_data.rb
+\ No newline at end of file
+
+
+diff --git a/.rspec b/.rspec
+new file mode 100644
+index 0000000..53607ea
+--- /dev/null
++++ b/.rspec
+@@ -0,0 +1 @@
++--colour
+
+
+diff --git a/.rvmrc b/.rvmrc
+new file mode 100644
+index 0000000..9c55277
+--- /dev/null
++++ b/.rvmrc
+@@ -0,0 +1,2 @@
++rvm use ruby-1.9.2-p290-patched
++alias cuke="bundle exec cucumber"
+
+
+diff --git a/Gemfile b/Gemfile
+index a345696..5552a6e 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,32 +1,34 @@
+ source 'http://rubygems.org'
+ 
++# the absolute core gems:
+ gem 'rails', '3.1.0'
++gem 'jquery-rails'
++gem 'mysql2'
++
++# the really welcome gems
++gem 'zurb-foundation'   # - layout gem
++gem 'simple_form'       # - html form enhancement gem
++gem 'haml-rails'        # - markup replacement gem
++gem 'pry'               # - irb enhancement gem
++gem 'devise'            # - authentication gem
++gem 'cancan'            # - authorization gem
++
++group :development, :test do
++  gem 'rspec-rails'
++  gem 'factory_girl_rails'
++  gem 'cucumber-rails', '1.0.2'
++  gem 'capybara'
++  gem 'minitest'
++  gem 'database_cleaner'
++  gem 'launchy'
++end
+ 
+-# Bundle edge Rails instead:
+-# gem 'rails',     :git => 'git://github.com/rails/rails.git'
+-
+-gem 'sqlite3'
+-
+-
+-# Gems used only for assets and not required
+-# in production environments by default.
+ group :assets do
+   gem 'sass-rails', "  ~> 3.1.0"
+   gem 'coffee-rails', "~> 3.1.0"
+   gem 'uglifier'
+ end
+ 
+-gem 'jquery-rails'
+-
+-# Use unicorn as the web server
+-# gem 'unicorn'
+-
+-# Deploy with Capistrano
+-# gem 'capistrano'
+-
+-# To use debugger
+-# gem 'ruby-debug19', :require => 'ruby-debug'
+-
+ group :test do
+   # Pretty printed test output
+   gem 'turn', :require => false
+
+
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 3978f00..888e28f 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -30,10 +30,22 @@ GEM
+       activesupport (= 3.1.0)
+     activesupport (3.1.0)
+       multi_json (~> 1.0)
++    addressable (2.2.6)
+     ansi (1.3.0)
+     arel (2.2.1)
+     bcrypt-ruby (3.0.1)
+     builder (3.0.0)
++    cancan (1.6.7)
++    capybara (1.1.1)
++      mime-types (>= 1.16)
++      nokogiri (>= 1.3.3)
++      rack (>= 1.0.0)
++      rack-test (>= 0.5.4)
++      selenium-webdriver (~> 2.0)
++      xpath (~> 0.1.4)
++    childprocess (0.2.2)
++      ffi (~> 1.0.6)
++    coderay (0.9.8)
+     coffee-rails (3.1.1)
+       coffee-script (>= 2.2.0)
+       railties (~> 3.1.0)
+@@ -41,22 +53,66 @@ GEM
+       coffee-script-source
+       execjs
+     coffee-script-source (1.1.2)
++    cucumber (1.0.6)
++      builder (>= 2.1.2)
++      diff-lcs (>= 1.1.2)
++      gherkin (~> 2.4.18)
++      json (>= 1.4.6)
++      term-ansicolor (>= 1.0.6)
++    cucumber-rails (1.0.2)
++      capybara (>= 1.0.0)
++      cucumber (~> 1.0.0)
++      nokogiri (>= 1.4.6)
++    database_cleaner (0.7.0)
++    devise (1.4.9)
++      bcrypt-ruby (~> 3.0)
++      orm_adapter (~> 0.0.3)
++      warden (~> 1.0.3)
++    diff-lcs (1.1.3)
+     erubis (2.7.0)
+     execjs (1.2.9)
+       multi_json (~> 1.0)
++    factory_girl (2.2.0)
++      activesupport
++    factory_girl_rails (1.3.0)
++      factory_girl (~> 2.2.0)
++      railties (>= 3.0.0)
++    ffi (1.0.9)
++    gherkin (2.4.21)
++      json (>= 1.4.6)
++    haml (3.1.3)
++    haml-rails (0.3.4)
++      actionpack (~> 3.0)
++      activesupport (~> 3.0)
++      haml (~> 3.0)
++      railties (~> 3.0)
+     hike (1.2.1)
+     i18n (0.6.0)
+     jquery-rails (1.0.16)
+       railties (~> 3.0)
+       thor (~> 0.14)
+     json (1.6.1)
++    json_pure (1.6.1)
++    launchy (2.0.5)
++      addressable (~> 2.2.6)
+     mail (2.3.0)
+       i18n (>= 0.4.0)
+       mime-types (~> 1.16)
+       treetop (~> 1.4.8)
++    method_source (0.6.7)
++      ruby_parser (>= 2.3.1)
+     mime-types (1.17.2)
++    minitest (2.8.1)
+     multi_json (1.0.3)
++    mysql2 (0.3.7)
++    nokogiri (1.5.0)
++    orm_adapter (0.0.5)
+     polyglot (0.3.2)
++    pry (0.9.7.3)
++      coderay (~> 0.9.8)
++      method_source (~> 0.6.7)
++      ruby_parser (>= 2.3.1)
++      slop (~> 2.1.0)
+     rack (1.3.5)
+     rack-cache (1.0.3)
+       rack (>= 0.4)
+@@ -84,6 +140,22 @@ GEM
+     rake (0.9.2.2)
+     rdoc (3.11)
+       json (~> 1.4)
++    rspec (2.7.0)
++      rspec-core (~> 2.7.0)
++      rspec-expectations (~> 2.7.0)
++      rspec-mocks (~> 2.7.0)
++    rspec-core (2.7.1)
++    rspec-expectations (2.7.0)
++      diff-lcs (~> 1.1.2)
++    rspec-mocks (2.7.0)
++    rspec-rails (2.7.0)
++      actionpack (~> 3.0)
++      activesupport (~> 3.0)
++      railties (~> 3.0)
++      rspec (~> 2.7.0)
++    ruby_parser (2.3.1)
++      sexp_processor (~> 3.0)
++    rubyzip (0.9.4)
+     sass (3.1.10)
+     sass-rails (3.1.4)
+       actionpack (~> 3.1.0)
+@@ -91,11 +163,21 @@ GEM
+       sass (>= 3.1.4)
+       sprockets (~> 2.0.0)
+       tilt (~> 1.3.2)
++    selenium-webdriver (2.10.0)
++      childprocess (>= 0.2.1)
++      ffi (= 1.0.9)
++      json_pure
++      rubyzip
++    sexp_processor (3.0.7)
++    simple_form (1.5.2)
++      actionpack (~> 3.0)
++      activemodel (~> 3.0)
++    slop (2.1.0)
+     sprockets (2.0.3)
+       hike (~> 1.2)
+       rack (~> 1.0)
+       tilt (~> 1.1, != 1.3.0)
+-    sqlite3 (1.3.4)
++    term-ansicolor (1.0.7)
+     thor (0.14.6)
+     tilt (1.3.3)
+     treetop (1.4.10)
+@@ -107,15 +189,35 @@ GEM
+     uglifier (1.0.4)
+       execjs (>= 0.3.0)
+       multi_json (>= 1.0.2)
++    warden (1.0.6)
++      rack (>= 1.0)
++    xpath (0.1.4)
++      nokogiri (~> 1.3)
++    zurb-foundation (2.0.2)
++      jquery-rails (~> 1.0)
++      rails (~> 3.1.0)
+ 
+ PLATFORMS
+   ruby
+ 
+ DEPENDENCIES
++  cancan
++  capybara
+   coffee-rails (~> 3.1.0)
++  cucumber-rails (= 1.0.2)
++  database_cleaner
++  devise
++  factory_girl_rails
++  haml-rails
+   jquery-rails
++  launchy
++  minitest
++  mysql2
++  pry
+   rails (= 3.1.0)
++  rspec-rails
+   sass-rails (~> 3.1.0)
+-  sqlite3
++  simple_form
+   turn
+   uglifier
++  zurb-foundation
+
+
+diff --git a/app/assets/javascripts/application.js b/app/assets/javascripts/application.js
+index 37c7bfc..30876e0 100644
+--- a/app/assets/javascripts/application.js
++++ b/app/assets/javascripts/application.js
+@@ -6,4 +6,5 @@
+ //
+ //= require jquery
+ //= require jquery_ujs
++//= require foundation
+ //= require_tree .
+
+
+diff --git a/app/assets/javascripts/home.js.coffee b/app/assets/javascripts/home.js.coffee
+new file mode 100644
+index 0000000..7615679
+--- /dev/null
++++ b/app/assets/javascripts/home.js.coffee
+@@ -0,0 +1,3 @@
++# Place all the behaviors and hooks related to the matching controller here.
++# All this logic will automatically be available in application.js.
++# You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
+diff --git a/app/assets/javascripts/posts.js.coffee b/app/assets/javascripts/posts.js.coffee
+new file mode 100644
+index 0000000..7615679
+--- /dev/null
++++ b/app/assets/javascripts/posts.js.coffee
+@@ -0,0 +1,3 @@
++# Place all the behaviors and hooks related to the matching controller here.
++# All this logic will automatically be available in application.js.
++# You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
+
+
+diff --git a/app/assets/stylesheets/application.css b/app/assets/stylesheets/application.css
+index fc25b57..e1b7e3c 100644
+--- a/app/assets/stylesheets/application.css
++++ b/app/assets/stylesheets/application.css
+@@ -3,5 +3,6 @@
+  * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+  * the top of the compiled file, but it's generally better to create a new file per style scope.
+  *= require_self
++ *= require foundation
+  *= require_tree . 
+ */
+\ No newline at end of file
+
+
+diff --git a/app/assets/stylesheets/home.css.scss b/app/assets/stylesheets/home.css.scss
+new file mode 100644
+index 0000000..f0ddc68
+--- /dev/null
++++ b/app/assets/stylesheets/home.css.scss
+@@ -0,0 +1,3 @@
++// Place all the styles related to the home controller here.
++// They will automatically be included in application.css.
++// You can use Sass (SCSS) here: http://sass-lang.com/
+
+
+diff --git a/app/assets/stylesheets/posts.css.scss b/app/assets/stylesheets/posts.css.scss
+new file mode 100644
+index 0000000..1a7e153
+--- /dev/null
++++ b/app/assets/stylesheets/posts.css.scss
+@@ -0,0 +1,3 @@
++// Place all the styles related to the posts controller here.
++// They will automatically be included in application.css.
++// You can use Sass (SCSS) here: http://sass-lang.com/
+diff --git a/app/assets/stylesheets/scaffolds.css.scss b/app/assets/stylesheets/scaffolds.css.scss
+new file mode 100644
+index 0000000..05188f0
+--- /dev/null
++++ b/app/assets/stylesheets/scaffolds.css.scss
+@@ -0,0 +1,56 @@
++body {
++  background-color: #fff;
++  color: #333;
++  font-family: verdana, arial, helvetica, sans-serif;
++  font-size: 13px;
++  line-height: 18px; }
++
++p, ol, ul, td {
++  font-family: verdana, arial, helvetica, sans-serif;
++  font-size: 13px;
++  line-height: 18px; }
++
++pre {
++  background-color: #eee;
++  padding: 10px;
++  font-size: 11px; }
++
++a {
++  color: #000;
++  &:visited {
++    color: #666; }
++  &:hover {
++    color: #fff;
++    background-color: #000; } }
++
++div {
++  &.field, &.actions {
++    margin-bottom: 10px; } }
++
++#notice {
++  color: green; }
++
++.field_with_errors {
++  padding: 2px;
++  background-color: red;
++  display: table; }
++
++#error_explanation {
++  width: 450px;
++  border: 2px solid red;
++  padding: 7px;
++  padding-bottom: 0;
++  margin-bottom: 20px;
++  background-color: #f0f0f0;
++  h2 {
++    text-align: left;
++    font-weight: bold;
++    padding: 5px 5px 5px 15px;
++    font-size: 12px;
++    margin: -7px;
++    margin-bottom: 0px;
++    background-color: #c00;
++    color: #fff; }
++  ul li {
++    font-size: 12px;
++    list-style: square; } }
+
+
+diff --git a/app/controllers/devise/confirmations_controller.rb b/app/controllers/devise/confirmations_controller.rb
+new file mode 100644
+index 0000000..54ab92b
+--- /dev/null
++++ b/app/controllers/devise/confirmations_controller.rb
+@@ -0,0 +1,47 @@
++class Devise::ConfirmationsController < ApplicationController
++  include Devise::Controllers::InternalHelpers
++
++  # GET /resource/confirmation/new
++  def new
++    build_resource({})
++    render_with_scope :new
++  end
++
++  # POST /resource/confirmation
++  def create
++    self.resource = resource_class.send_confirmation_instructions(params[resource_name])
++
++    if successful_and_sane?(resource)
++      set_flash_message(:notice, :send_instructions) if is_navigational_format?
++      respond_with({}, :location => after_resending_confirmation_instructions_path_for(resource_name))
++    else
++      respond_with_navigational(resource){ render_with_scope :new }
++    end
++  end
++
++  # GET /resource/confirmation?confirmation_token=abcdef
++  def show
++    self.resource = resource_class.confirm_by_token(params[:confirmation_token])
++
++    if resource.errors.empty?
++      set_flash_message(:notice, :confirmed) if is_navigational_format?
++      sign_in(resource_name, resource)
++      respond_with_navigational(resource){ redirect_to after_confirmation_path_for(resource_name, resource) }
++    else
++      respond_with_navigational(resource.errors, :status => :unprocessable_entity){ render_with_scope :new }
++    end
++  end
++
++  protected
++
++    # The path used after resending confirmation instructions.
++    def after_resending_confirmation_instructions_path_for(resource_name)
++      new_session_path(resource_name)
++    end
++
++    # The path used after confirmation.
++    def after_confirmation_path_for(resource_name, resource)
++      redirect_location(resource_name, resource)
++    end
++
++end
+
+
+diff --git a/app/controllers/devise/omniauth_callbacks_controller.rb b/app/controllers/devise/omniauth_callbacks_controller.rb
+new file mode 100644
+index 0000000..32bd086
+--- /dev/null
++++ b/app/controllers/devise/omniauth_callbacks_controller.rb
+@@ -0,0 +1,26 @@
++class Devise::OmniauthCallbacksController < ApplicationController
++  include Devise::Controllers::InternalHelpers
++
++  def failure
++    set_flash_message :alert, :failure, :kind => failed_strategy.name.to_s.humanize, :reason => failure_message
++    redirect_to after_omniauth_failure_path_for(resource_name)
++  end
++
++  protected
++
++  def failed_strategy
++    env["omniauth.error.strategy"]
++  end
++
++  def failure_message
++    exception = env["omniauth.error"]
++    error   = exception.error_reason if exception.respond_to?(:error_reason)
++    error ||= exception.error        if exception.respond_to?(:error)
++    error ||= env["omniauth.error.type"].to_s
++    error.to_s.humanize if error
++  end
++
++  def after_omniauth_failure_path_for(scope)
++    new_session_path(scope)
++  end
++end
+
+
+diff --git a/app/controllers/devise/passwords_controller.rb b/app/controllers/devise/passwords_controller.rb
+new file mode 100644
+index 0000000..1009f42
+--- /dev/null
++++ b/app/controllers/devise/passwords_controller.rb
+@@ -0,0 +1,51 @@
++class Devise::PasswordsController < ApplicationController
++  prepend_before_filter :require_no_authentication
++  include Devise::Controllers::InternalHelpers
++
++  # GET /resource/password/new
++  def new
++    build_resource({})
++    render_with_scope :new
++  end
++
++  # POST /resource/password
++  def create
++    self.resource = resource_class.send_reset_password_instructions(params[resource_name])
++
++    if successful_and_sane?(resource)
++      set_flash_message(:notice, :send_instructions) if is_navigational_format?
++      respond_with({}, :location => after_sending_reset_password_instructions_path_for(resource_name))
++    else
++      redirect_to(new_user_password_path, :alert => resource.errors.full_messages)
++    end
++  end
++
++  # GET /resource/password/edit?reset_password_token=abcdef
++  def edit
++    self.resource = resource_class.new
++    resource.reset_password_token = params[:reset_password_token]
++    render_with_scope :edit
++  end
++
++  # PUT /resource/password
++  def update
++    self.resource = resource_class.reset_password_by_token(params[resource_name])
++
++    if resource.errors.empty?
++      flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
++      set_flash_message(:notice, flash_message) if is_navigational_format?
++      sign_in(resource_name, resource)
++      respond_with resource, :location => redirect_location(resource_name, resource)
++    else
++      respond_with_navigational(resource){ render_with_scope :edit }
++    end
++  end
++
++  protected
++
++    # The path used after sending reset password instructions
++    def after_sending_reset_password_instructions_path_for(resource_name)
++      new_session_path(resource_name)
++    end
++
++end
+
+
+diff --git a/app/controllers/devise/registrations_controller.rb b/app/controllers/devise/registrations_controller.rb
+new file mode 100644
+index 0000000..cb142a2
+--- /dev/null
++++ b/app/controllers/devise/registrations_controller.rb
+@@ -0,0 +1,123 @@
++class Devise::RegistrationsController < ApplicationController
++  prepend_before_filter :require_no_authentication, :only => [ :new, :create, :cancel ]
++  prepend_before_filter :authenticate_scope!, :only => [:edit, :update, :destroy]
++  include Devise::Controllers::InternalHelpers
++
++  # GET /resource/sign_up
++  def new
++    resource = build_resource({})
++    respond_with_navigational(resource){ render_with_scope :new }
++  end
++
++  # POST /resource
++  def create
++    build_resource
++
++    Rails.logger.info "\n\n#{resource}\n"
++    Rails.logger.info "#{resource_name}\n\n"
++
++    if resource.save
++      if resource.active_for_authentication?
++        set_flash_message :notice, :signed_up if is_navigational_format?
++        sign_in(resource_name, resource)
++        respond_with resource, :location => redirect_location(resource_name, resource)
++      else
++        set_flash_message :notice, :inactive_signed_up, :reason => inactive_reason(resource) if is_navigational_format?
++        expire_session_data_after_sign_in!
++        respond_with resource, :location => after_inactive_sign_up_path_for(resource)
++      end
++    else
++      clean_up_passwords(resource)
++      redirect_to(new_user_registration_path, :alert => resource.errors.full_messages)
++    end
++  end
++
++  # GET /resource/edit
++  def edit
++    render_with_scope :edit
++  end
++
++  # PUT /resource
++  # We need to use a copy of the resource because we don't want to change
++  # the current user in place.
++  def update
++    self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
++
++    if resource.update_with_password(params[resource_name])
++      set_flash_message :notice, :updated if is_navigational_format?
++      sign_in resource_name, resource, :bypass => true
++      respond_with resource, :location => after_update_path_for(resource)
++    else
++      clean_up_passwords(resource)
++      respond_with_navigational(resource){ render_with_scope :edit }
++    end
++  end
++
++  # DELETE /resource
++  def destroy
++    resource.destroy
++    Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
++    set_flash_message :notice, :destroyed if is_navigational_format?
++    respond_with_navigational(resource){ redirect_to after_sign_out_path_for(resource_name) }
++  end
++
++  # GET /resource/cancel
++  # Forces the session data which is usually expired after sign
++  # in to be expired now. This is useful if the user wants to
++  # cancel oauth signing in/up in the middle of the process,
++  # removing all OAuth session data.
++  def cancel
++    expire_session_data_after_sign_in!
++    redirect_to new_registration_path(resource_name)
++  end
++
++  protected
++
++    # Build a devise resource passing in the session. Useful to move
++    # temporary session data to the newly created user.
++    def build_resource(hash=nil)
++      hash ||= params[resource_name] || {}
++      self.resource = resource_class.new_with_session(hash, session)
++    end
++
++    # The path used after sign up. You need to overwrite this method
++    # in your own RegistrationsController.
++    def after_sign_up_path_for(resource)
++      after_sign_in_path_for(resource)
++    end
++
++    # Overwrite redirect_for_sign_in so it takes uses after_sign_up_path_for.
++    def redirect_location(scope, resource)
++      stored_location_for(scope) || after_sign_up_path_for(resource)
++    end
++
++    # Returns the inactive reason translated.
++    def inactive_reason(resource)
++      reason = resource.inactive_message.to_s
++      I18n.t("devise.registrations.reasons.#{reason}", :default => reason)
++    end
++
++    # The path used after sign up for inactive accounts. You need to overwrite
++    # this method in your own RegistrationsController.
++    def after_inactive_sign_up_path_for(resource)
++      root_path
++    end
++
++    # The default url to be used after updating a resource. You need to overwrite
++    # this method in your own RegistrationsController.
++    def after_update_path_for(resource)
++      if defined?(super)
++        ActiveSupport::Deprecation.warn "Defining after_update_path_for in ApplicationController " <<
++          "is deprecated. Please add a RegistrationsController to your application and define it there."
++        super
++      else
++        after_sign_in_path_for(resource)
++      end
++    end
++
++    # Authenticates the current scope and gets the current resource from the session.
++    def authenticate_scope!
++      send(:"authenticate_#{resource_name}!", :force => true)
++      self.resource = send(:"current_#{resource_name}")
++    end
++end
+
+
+diff --git a/app/controllers/devise/sessions_controller.rb b/app/controllers/devise/sessions_controller.rb
+new file mode 100644
+index 0000000..3aee594
+--- /dev/null
++++ b/app/controllers/devise/sessions_controller.rb
+@@ -0,0 +1,48 @@
++class Devise::SessionsController < ApplicationController
++  prepend_before_filter :require_no_authentication, :only => [ :new, :create ]
++  prepend_before_filter :allow_params_authentication!, :only => :create
++  include Devise::Controllers::InternalHelpers
++
++  # GET /resource/sign_in
++  def new
++    resource = build_resource
++    clean_up_passwords(resource)
++    respond_with_navigational(resource, stub_options(resource)){ render_with_scope :new }
++  end
++
++  # POST /resource/sign_in
++  def create
++    resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#new")
++    set_flash_message(:notice, :signed_in) if is_navigational_format?
++    sign_in(resource_name, resource)
++    respond_with resource, :location => redirect_location(resource_name, resource)
++  end
++
++  # GET /resource/sign_out
++  def destroy
++    signed_in = signed_in?(resource_name)
++    Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
++    set_flash_message :notice, :signed_out if signed_in
++
++    # We actually need to hardcode this, as Rails default responder doesn't
++    # support returning empty response on GET request
++    respond_to do |format|
++      format.any(*navigational_formats) { redirect_to after_sign_out_path_for(resource_name) }
++      format.all do
++        method = "to_#{request_format}"
++        text = {}.respond_to?(method) ? {}.send(method) : ""
++        render :text => text, :status => :ok
++      end
++    end
++  end
++
++  protected
++
++  def stub_options(resource)
++    methods = resource_class.authentication_keys.dup
++    methods = methods.keys if methods.is_a?(Hash)
++    methods << :password if resource.respond_to?(:password)
++    { :methods => methods, :only => [:password] }
++  end
++end
++
+
+
+diff --git a/app/controllers/devise/unlocks_controller.rb b/app/controllers/devise/unlocks_controller.rb
+new file mode 100644
+index 0000000..15933cd
+--- /dev/null
++++ b/app/controllers/devise/unlocks_controller.rb
+@@ -0,0 +1,35 @@
++class Devise::UnlocksController < ApplicationController
++  prepend_before_filter :require_no_authentication
++  include Devise::Controllers::InternalHelpers
++
++  # GET /resource/unlock/new
++  def new
++    build_resource({})
++    render_with_scope :new
++  end
++
++  # POST /resource/unlock
++  def create
++    self.resource = resource_class.send_unlock_instructions(params[resource_name])
++
++    if successful_and_sane?(resource)
++      set_flash_message :notice, :send_instructions if is_navigational_format?
++      respond_with({}, :location => new_session_path(resource_name))
++    else
++      respond_with_navigational(resource){ render_with_scope :new }
++    end
++  end
++
++  # GET /resource/unlock?unlock_token=abcdef
++  def show
++    self.resource = resource_class.unlock_access_by_token(params[:unlock_token])
++
++    if resource.errors.empty?
++      set_flash_message :notice, :unlocked if is_navigational_format?
++      sign_in(resource_name, resource)
++      respond_with_navigational(resource){ redirect_to redirect_location(resource_name, resource) }
++    else
++      respond_with_navigational(resource.errors, :status => :unprocessable_entity){ render_with_scope :new }
++    end
++  end
++end
+
+
+diff --git a/app/controllers/home_controller.rb b/app/controllers/home_controller.rb
+new file mode 100644
+index 0000000..95f2992
+--- /dev/null
++++ b/app/controllers/home_controller.rb
+@@ -0,0 +1,4 @@
++class HomeController < ApplicationController
++  def index
++  end
++end
+
+
+diff --git a/app/controllers/posts_controller.rb b/app/controllers/posts_controller.rb
+new file mode 100644
+index 0000000..9917707
+--- /dev/null
++++ b/app/controllers/posts_controller.rb
+@@ -0,0 +1,84 @@
++class PostsController < ApplicationController
++  load_and_authorize_resource
++  
++  # GET /posts
++  # GET /posts.json
++  def index
++    @posts = Post.all
++      respond_to do |format|
++      format.html # index.html.erb
++      format.json { render json: @posts }
++    end
++  end
++
++  # GET /posts/1
++  # GET /posts/1.json
++  def show
++    @post = Post.find(params[:id])
++
++    respond_to do |format|
++      format.html # show.html.erb
++      format.json { render json: @post }
++    end
++  end
++
++  # GET /posts/new
++  # GET /posts/new.json
++  def new
++    @post = Post.new
++
++    respond_to do |format|
++      format.html # new.html.erb
++      format.json { render json: @post }
++    end
++  end
++
++  # GET /posts/1/edit
++  def edit
++    @post = Post.find(params[:id])
++  end
++
++  # POST /posts
++  # POST /posts.json
++  def create
++    @post = Post.new(params[:post])
++
++    respond_to do |format|
++      if @post.save
++        format.html { redirect_to forum_path, notice: 'Post was successfully created.' }
++        format.json { render json: @post, status: :created, location: @post }
++      else
++        format.html { render action: "new" }
++        format.json { render json: @post.errors, status: :unprocessable_entity }
++      end
++    end
++  end
++
++  # PUT /posts/1
++  # PUT /posts/1.json
++  def update
++    @post = Post.find(params[:id])
++
++    respond_to do |format|
++      if @post.update_attributes(params[:post])
++        format.html { redirect_to forum_path, notice: 'Post was successfully updated.' }
++        format.json { head :ok }
++      else
++        format.html { render action: "edit" }
++        format.json { render json: @post.errors, status: :unprocessable_entity }
++      end
++    end
++  end
++
++  # DELETE /posts/1
++  # DELETE /posts/1.json
++  def destroy
++    @post = Post.find(params[:id])
++    @post.destroy
++
++    respond_to do |format|
++      format.html { redirect_to forum_path }
++      format.json { head :ok }
++    end
++  end
++end
+
+
+diff --git a/app/helpers/devise_helper.rb b/app/helpers/devise_helper.rb
+new file mode 100644
+index 0000000..cfcbc82
+--- /dev/null
++++ b/app/helpers/devise_helper.rb
+@@ -0,0 +1,25 @@
++module DeviseHelper
++  # A simple way to show error messages for the current devise resource. If you need
++  # to customize this method, you can either overwrite it in your application helpers or
++  # copy the views to your application.
++  #
++  # This method is intended to stay simple and it is unlikely that we are going to change
++  # it to add more behavior or options.
++  def devise_error_messages!
++    return "" if resource.errors.empty?
++
++    messages = resource.errors.full_messages.map { |msg| content_tag(:li, msg) }.join
++    sentence = I18n.t("errors.messages.not_saved",
++                      :count => resource.errors.count,
++                      :resource => resource.class.model_name.human.downcase)
++
++    html = <<-HTML
++    <div id="error_explanation">
++      <h2>#{sentence}</h2>
++      <ul>#{messages}</ul>
++    </div>
++    HTML
++
++    html.html_safe
++  end
++end
+
+
+diff --git a/app/helpers/home_helper.rb b/app/helpers/home_helper.rb
+new file mode 100644
+index 0000000..23de56a
+--- /dev/null
++++ b/app/helpers/home_helper.rb
+@@ -0,0 +1,2 @@
++module HomeHelper
++end
+
+
+diff --git a/app/helpers/posts_helper.rb b/app/helpers/posts_helper.rb
+new file mode 100644
+index 0000000..a7b8cec
+--- /dev/null
++++ b/app/helpers/posts_helper.rb
+@@ -0,0 +1,2 @@
++module PostsHelper
++end
+
+
+diff --git a/app/mailers/devise/mailer.rb b/app/mailers/devise/mailer.rb
+new file mode 100644
+index 0000000..df07e0f
+--- /dev/null
++++ b/app/mailers/devise/mailer.rb
+@@ -0,0 +1,15 @@
++class Devise::Mailer < ::ActionMailer::Base
++  include Devise::Mailers::Helpers
++
++  def confirmation_instructions(record)
++    devise_mail(record, :confirmation_instructions)
++  end
++
++  def reset_password_instructions(record)
++    devise_mail(record, :reset_password_instructions)
++  end
++
++  def unlock_instructions(record)
++    devise_mail(record, :unlock_instructions)
++  end
++end
+
+
+diff --git a/app/mailers/user_mailer.rb b/app/mailers/user_mailer.rb
+new file mode 100644
+index 0000000..da3fd89
+--- /dev/null
++++ b/app/mailers/user_mailer.rb
+@@ -0,0 +1,23 @@
++class UserMailer < ActionMailer::Base
++  include Devise::Mailers::Helpers
++  default :from => "jkb.zuchowski@gmail.com"
++  
++  def confirmation_instructions(record)
++    devise_mail(record, :confirmation_instructions)
++  end
++
++    # send password reset instructions
++  def reset_password_instructions(user)
++    @resource = user
++    mail(:to => @resource.email,
++      :subject => "Reset password instructions",
++      :tag => 'password-reset',
++      :content_type => "text/html") do |format|
++        format.html { render "devise/mailer/reset_password_instructions" }
++    end
++  end
++
++  def unlock_instructions(record)
++    devise_mail(record, :unlock_instructions)
++  end
++end
+
+
+diff --git a/app/models/ability.rb b/app/models/ability.rb
+new file mode 100644
+index 0000000..6d387ff
+--- /dev/null
++++ b/app/models/ability.rb
+@@ -0,0 +1,12 @@
++class Ability
++  include CanCan::Ability
++
++  def initialize(user)
++    user ||= User.new
++    if user.id
++      can :manage, :all
++    else
++      can :read, :all
++    end    
++  end
++end
+
+
+diff --git a/app/models/post.rb b/app/models/post.rb
+new file mode 100644
+index 0000000..2fb16b7
+--- /dev/null
++++ b/app/models/post.rb
+@@ -0,0 +1,3 @@
++class Post < ActiveRecord::Base
++	belongs_to :user
++end
+
+
+diff --git a/app/models/user.rb b/app/models/user.rb
+new file mode 100644
+index 0000000..320cd83
+--- /dev/null
++++ b/app/models/user.rb
+@@ -0,0 +1,17 @@
++class User < ActiveRecord::Base
++  # Include default devise modules. Others available are:
++  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
++  devise :database_authenticatable, :registerable,
++         :recoverable, :rememberable, :trackable, :validatable
++
++  # Setup accessible (or protected) attributes for your model
++  attr_accessible :email, :login, :password, :password_confirmation, :remember_me
++
++  has_many :posts
++
++  def self.find_for_database_authentication(conditions={})
++    self.find_by_login conditions[:login] or
++    self.find_by_email conditions[:login]
++  end
++
++end
+
+
+diff --git a/app/views/devise/confirmations/new.html.haml b/app/views/devise/confirmations/new.html.haml
+new file mode 100644
+index 0000000..aaed937
+--- /dev/null
++++ b/app/views/devise/confirmations/new.html.haml
+@@ -0,0 +1,9 @@
++%h2 Resend confirmation instructions
++= form_for(resource, :as => resource_name, :url => confirmation_path(resource_name), :html => { :method => :post }) do |f|
++  = devise_error_messages!
++  %div
++    = f.label :email
++    %br/
++    = f.email_field :email
++  %div= f.submit "Resend confirmation instructions"
++= render :partial => "devise/shared/links"
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/mailer/confirmation_instructions.html.haml b/app/views/devise/mailer/confirmation_instructions.html.haml
+new file mode 100644
+index 0000000..c4f2eac
+--- /dev/null
++++ b/app/views/devise/mailer/confirmation_instructions.html.haml
+@@ -0,0 +1,4 @@
++%p
++  Welcome #{@resource.email}!
++%p You can confirm your account through the link below:
++%p= link_to 'Confirm my account', confirmation_url(@resource, :confirmation_token => @resource.confirmation_token)
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/mailer/reset_password_instructions.html.haml b/app/views/devise/mailer/reset_password_instructions.html.haml
+new file mode 100644
+index 0000000..3cc0fd3
+--- /dev/null
++++ b/app/views/devise/mailer/reset_password_instructions.html.haml
+@@ -0,0 +1,6 @@
++%p
++  Hello #{@resource.email}!
++%p Someone has requested a link to change your password, and you can do this through the link below.
++%p= link_to 'Change my password', edit_password_url(@resource, :reset_password_token => @resource.reset_password_token)
++%p If you didn't request this, please ignore this email.
++%p Your password won't change until you access the link above and create a new one.
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/mailer/unlock_instructions.html.haml b/app/views/devise/mailer/unlock_instructions.html.haml
+new file mode 100644
+index 0000000..0258a44
+--- /dev/null
++++ b/app/views/devise/mailer/unlock_instructions.html.haml
+@@ -0,0 +1,5 @@
++%p
++  Hello #{@resource.email}!
++%p Your account has been locked due to an excessive amount of unsuccessful sign in attempts.
++%p Click the link below to unlock your account:
++%p= link_to 'Unlock my account', unlock_url(@resource, :unlock_token => @resource.unlock_token)
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/passwords/edit.html.haml b/app/views/devise/passwords/edit.html.haml
+new file mode 100644
+index 0000000..2b050df
+--- /dev/null
++++ b/app/views/devise/passwords/edit.html.haml
+@@ -0,0 +1,14 @@
++%h2 Change your password
++= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f|
++  = devise_error_messages!
++  = f.hidden_field :reset_password_token
++  %div
++    = f.label :password, "New password"
++    %br/
++    = f.password_field :password
++  %div
++    = f.label :password_confirmation, "Confirm new password"
++    %br/
++    = f.password_field :password_confirmation
++  %div= f.submit "Change my password"
++= render :partial => "devise/shared/links"
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/passwords/new.html.haml b/app/views/devise/passwords/new.html.haml
+new file mode 100644
+index 0000000..8dbfb85
+--- /dev/null
++++ b/app/views/devise/passwords/new.html.haml
+@@ -0,0 +1,13 @@
++%h2 Forgot your password?
++-if notice
++  %p.notice= notice
++-if alert
++  %p.alert= alert
++= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f|
++  = devise_error_messages!
++  %div
++    = f.label :email
++    %br/
++    = f.email_field :email
++  %div= f.submit "Send me reset password instructions"
++= render :partial => "devise/shared/links"
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/registrations/edit.html.haml b/app/views/devise/registrations/edit.html.haml
+new file mode 100644
+index 0000000..acc2432
+--- /dev/null
++++ b/app/views/devise/registrations/edit.html.haml
+@@ -0,0 +1,11 @@
++%h2
++  Edit #{resource_name.to_s.humanize}
++= simple_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put, :class => "nice" }) do |f|
++  = devise_error_messages!
++  %div
++    = f.input :email, :wrapper_html => {:class => "form-field"}
++    = f.input :current_password, :wrapper_html => {:class => "form-field"}
++    = f.input :password, :wrapper_html => {:class => "form-field"}
++    = f.input :password_confirmation, :wrapper_html => {:class => "form-field"}
++  %div
++    =f.button :update
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/registrations/new.html.haml b/app/views/devise/registrations/new.html.haml
+new file mode 100644
+index 0000000..d8d7d17
+--- /dev/null
++++ b/app/views/devise/registrations/new.html.haml
+@@ -0,0 +1,16 @@
++%h2 Sign up
++-if notice
++  %p.notice= notice
++-if alert
++  %p.alert= alert
++.eight.columns
++  = simple_form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => {:class => "nice"}) do |f|
++    %div
++      = devise_error_messages!
++      = f.input :email, :wrapper_html => {:class => "form-field"}
++      = f.input :login, :wrapper_html => {:class => "form-field"}
++      = f.input :password, :wrapper_html => {:class => "form-field"}
++      = f.input :password_confirmation, :wrapper_html => {:class => "form-field"}   
++    %div
++      = f.button :submit, :value => "Register"
++  = render :partial => "devise/shared/links"
+
+
+diff --git a/app/views/devise/sessions/new.html.haml b/app/views/devise/sessions/new.html.haml
+new file mode 100644
+index 0000000..01a4c95
+--- /dev/null
++++ b/app/views/devise/sessions/new.html.haml
+@@ -0,0 +1,16 @@
++%h2 Sign in
++-if notice
++  %p.notice= notice
++-if alert
++  %p.alert= alert
++.eight.columns
++  = simple_form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
++    .inputs
++      = devise_error_messages!
++      = f.input :login, :required => false, :autofocus => true
++      = f.input :password, :required => false
++      = f.input :remember_me, :as => :boolean if devise_mapping.rememberable?
++    .actions
++      = f.button :submit, "Sign in"
++
++  = render :partial => "devise/shared/links"
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/shared/_links.html.haml b/app/views/devise/shared/_links.html.haml
+new file mode 100644
+index 0000000..05d195f
+--- /dev/null
++++ b/app/views/devise/shared/_links.html.haml
+@@ -0,0 +1,19 @@
++- if controller_name != 'sessions'
++  = link_to "Sign in", new_session_path(resource_name)
++  %br/
++- if devise_mapping.registerable? && controller_name != 'registrations'
++  = link_to "Sign up", new_registration_path(resource_name)
++  %br/
++- if devise_mapping.recoverable? && controller_name != 'passwords'
++  = link_to "Forgot your password?", new_password_path(resource_name)
++  %br/
++- if devise_mapping.confirmable? && controller_name != 'confirmations'
++  = link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name)
++  %br/
++- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks'
++  = link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name)
++  %br/
++- if devise_mapping.omniauthable?
++  - resource_class.omniauth_providers.each do |provider|
++    = link_to "Sign in with #{provider.to_s.titleize}", omniauth_authorize_path(resource_name, provider)
++    %br/
+\ No newline at end of file
+
+
+diff --git a/app/views/devise/unlocks/new.html.haml b/app/views/devise/unlocks/new.html.haml
+new file mode 100644
+index 0000000..2aac5c9
+--- /dev/null
++++ b/app/views/devise/unlocks/new.html.haml
+@@ -0,0 +1,9 @@
++%h2 Resend unlock instructions
++= form_for(resource, :as => resource_name, :url => unlock_path(resource_name), :html => { :method => :post }) do |f|
++  = devise_error_messages!
++  %div
++    = f.label :email
++    %br/
++    = f.email_field :email
++  %div= f.submit "Resend unlock instructions"
++= render :partial => "devise/shared/links"
+\ No newline at end of file
+
+
+diff --git a/app/views/home/index.html.haml b/app/views/home/index.html.haml
+new file mode 100644
+index 0000000..f2a17ca
+--- /dev/null
++++ b/app/views/home/index.html.haml
+@@ -0,0 +1,15 @@
++%h1 Home#index
++
++-unless current_user
++  %span
++    [
++    = link_to "Sign in", :new_user_session
++    |
++    = link_to "Sign up", :new_user_registration
++    ]
++-else
++  %p
++    = "Zalogowałeś się jako #{current_user.login}"
++    = link_to "Sign out", :destroy_user_session, :method => :delete
++
++= link_to "Forum", forum_path
+
+
+diff --git a/app/views/layouts/application.html.erb b/app/views/layouts/application.html.erb
+deleted file mode 100644
+index e92a65c..0000000
+--- a/app/views/layouts/application.html.erb
++++ /dev/null
+@@ -1,14 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <title>Mgr</title>
+-  <%= stylesheet_link_tag    "application" %>
+-  <%= javascript_include_tag "application" %>
+-  <%= csrf_meta_tags %>
+-</head>
+-<body>
+-
+-<%= yield %>
+-
+-</body>
+-</html>
+
+
+diff --git a/app/views/layouts/application.html.haml b/app/views/layouts/application.html.haml
+new file mode 100644
+index 0000000..89d7a4a
+--- /dev/null
++++ b/app/views/layouts/application.html.haml
+@@ -0,0 +1,9 @@
++!!!
++%html
++  %head
++    %title Mgr
++    = stylesheet_link_tag    "application"
++    = javascript_include_tag "application"
++    = csrf_meta_tags
++  %body
++    = yield
+\ No newline at end of file
+
+
+diff --git a/app/views/posts/_form.html.haml b/app/views/posts/_form.html.haml
+new file mode 100644
+index 0000000..d2a4788
+--- /dev/null
++++ b/app/views/posts/_form.html.haml
+@@ -0,0 +1,10 @@
++= simple_form_for @post do |f|
++  -if @post.errors.any?
++    #error_explanation
++      %h2= "#{pluralize(@post.errors.count, "error")} prohibited this post from being saved:"
++      %ul
++        - @post.errors.full_messages.each do |msg|
++          %li= msg
++  = f.input :content
++  .actions
++    = f.submit 'Save', :value => "Post"
+
+
+diff --git a/app/views/posts/edit.html.haml b/app/views/posts/edit.html.haml
+new file mode 100644
+index 0000000..a4f3dd5
+--- /dev/null
++++ b/app/views/posts/edit.html.haml
+@@ -0,0 +1,7 @@
++%h1 Editing post
++
++= render 'form'
++
++= link_to 'Show', @post
++\|
++= link_to 'Back', posts_path
+
+
+diff --git a/app/views/posts/index.html.haml b/app/views/posts/index.html.haml
+new file mode 100644
+index 0000000..3d9b5d0
+--- /dev/null
++++ b/app/views/posts/index.html.haml
+@@ -0,0 +1,21 @@
++%h1 Listing posts
++
++%table{ :id => "posts_list"}
++  %tr
++    %th User
++    %th Content
++    %th
++    %th
++    %th
++
++  - @posts.each do |post|
++    %tr
++      %td= post.user.login
++      %td= post.content
++      %td= link_to 'Show', post
++      %td= link_to 'Edit', edit_post_path(post)
++      %td= link_to 'Destroy', post, :confirm => 'Are you sure?', :method => :delete
++
++%br
++-if can? :manage, Post
++  = link_to 'New post', new_post_path
+
+
+diff --git a/app/views/posts/new.html.haml b/app/views/posts/new.html.haml
+new file mode 100644
+index 0000000..e44edc5
+--- /dev/null
++++ b/app/views/posts/new.html.haml
+@@ -0,0 +1,5 @@
++%h1 New post
++
++= render 'form'
++
++= link_to 'Back', posts_path
+
+
+diff --git a/app/views/posts/show.html.haml b/app/views/posts/show.html.haml
+new file mode 100644
+index 0000000..f9ff4ca
+--- /dev/null
++++ b/app/views/posts/show.html.haml
+@@ -0,0 +1,12 @@
++%p#notice= notice
++
++%p
++  %b User:
++  = @post.user_id
++%p
++  %b Content:
++  = @post.content
++
++= link_to 'Edit', edit_post_path(@post)
++\|
++= link_to 'Back', posts_path
+
+
+diff --git a/config/cucumber.yml b/config/cucumber.yml
+new file mode 100644
+index 0000000..89cf660
+--- /dev/null
++++ b/config/cucumber.yml
+@@ -0,0 +1,10 @@
++<%
++rerun = File.file?('rerun.txt') ? IO.read('rerun.txt') : ""
++rerun_opts = rerun.to_s.strip.empty? ? "--format #{ENV['CUCUMBER_FORMAT'] || 'progress'} features" : "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} #{rerun}"
++std_opts = "--format #{ENV['CUCUMBER_FORMAT'] || 'pretty'} --strict -t ~@wip -t ~@wip2 -t ~@wip3"
++%>
++default: <%= std_opts %> features
++wip: --tags @wip:3 --wip features
++wip2: --tags @wip2:3 --wip features
++wip3: --tags @wip3:3 --wip features
++rerun: <%= rerun_opts %> --format rerun --out rerun.txt --strict --tags ~@wip
+
+
+diff --git a/config/database.sample b/config/database.sample
+new file mode 100644
+index 0000000..df11a6d
+--- /dev/null
++++ b/config/database.sample
+@@ -0,0 +1,14 @@
++development:
++  adapter: mysql2
++  encoding: utf8
++  database: mgr_dev
++  username: root
++
++test: &test
++  adapter: mysql2
++  encoding: utf8
++  database: mgr_test
++  username: root
++
++cucumber:
++  <<: *test
+\ No newline at end of file
+
+
+diff --git a/config/database.yml b/config/database.yml
+deleted file mode 100644
+index 51a4dd4..0000000
+--- a/config/database.yml
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# SQLite version 3.x
+-#   gem install sqlite3
+-#
+-#   Ensure the SQLite 3 gem is defined in your Gemfile
+-#   gem 'sqlite3'
+-development:
+-  adapter: sqlite3
+-  database: db/development.sqlite3
+-  pool: 5
+-  timeout: 5000
+-
+-# Warning: The database defined as "test" will be erased and
+-# re-generated from your development database when you run "rake".
+-# Do not set this db to the same as development or production.
+-test:
+-  adapter: sqlite3
+-  database: db/test.sqlite3
+-  pool: 5
+-  timeout: 5000
+-
+-production:
+-  adapter: sqlite3
+-  database: db/production.sqlite3
+-  pool: 5
+-  timeout: 5000
+
+
+diff --git a/config/environments/development.rb b/config/environments/development.rb
+index 97bb41c..d12b0db 100644
+--- a/config/environments/development.rb
++++ b/config/environments/development.rb
+@@ -1,4 +1,5 @@
+ Mgr::Application.configure do
++  load Rails.root.join("config/environments/secret_data.rb")
+   # Settings specified here will take precedence over those in config/application.rb
+ 
+   # In the development environment your application's code is reloaded on
+@@ -14,7 +15,7 @@ Mgr::Application.configure do
+   config.action_controller.perform_caching = false
+ 
+   # Don't care if the mailer can't send
+-  config.action_mailer.raise_delivery_errors = false
++  config.action_mailer.raise_delivery_errors = true
+ 
+   # Print deprecation notices to the Rails logger
+   config.active_support.deprecation = :log
+@@ -27,4 +28,21 @@ Mgr::Application.configure do
+ 
+   # Expands the lines which load the assets
+   config.assets.debug = true
++
++  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
++  config.action_mailer.delivery_method = :smtp
++  config.action_mailer.smtp_settings = {
++      :address              => "smtp.gmail.com",
++      :port                 => 587,
++      :domain               => 'gmail.com',
++      :user_name            => SecretData::EMAIL,
++      :password             => SecretData::PASSW,
++      :authentication       => 'plain',
++      :enable_starttls_auto => true
++  }
+ end
++
++silence_warnings do
++  require 'pry'
++  IRB = Pry
++end
+\ No newline at end of file
+
+
+diff --git a/config/environments/test.rb b/config/environments/test.rb
+index 380f394..5e7dac5 100644
+--- a/config/environments/test.rb
++++ b/config/environments/test.rb
+@@ -1,4 +1,5 @@
+ Mgr::Application.configure do
++  load Rails.root.join("config/environments/secret_data.rb")
+   # Settings specified here will take precedence over those in config/application.rb
+ 
+   # The test environment is used exclusively to run your application's
+@@ -39,4 +40,16 @@ Mgr::Application.configure do
+ 
+   # Allow pass debug_assets=true as a query parameter to load pages with unpackaged assets
+   config.assets.allow_debugging = true
++
++  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
++  config.action_mailer.delivery_method = :smtp
++    config.action_mailer.smtp_settings = {
++        :address              => "smtp.gmail.com",
++        :port                 => 587,
++        :domain               => 'gmail.com',
++        :user_name            => SecretData::EMAIL,
++        :password             => SecretData::PASSW,
++        :authentication       => 'plain',
++        :enable_starttls_auto => true
++    }
+ end
+
+
+diff --git a/config/initializers/devise.rb b/config/initializers/devise.rb
+new file mode 100644
+index 0000000..97e00e2
+--- /dev/null
++++ b/config/initializers/devise.rb
+@@ -0,0 +1,210 @@
++# Use this hook to configure devise mailer, warden hooks and so forth. The first
++# four configuration values can also be set straight in your models.
++Devise.setup do |config|
++  # ==> Mailer Configuration
++  # Configure the e-mail address which will be shown in Devise::Mailer,
++  # note that it will be overwritten if you use your own mailer class with default "from" parameter.
++  config.mailer_sender = "ellmunzai@gmail.com"
++
++  # Configure the class responsible to send e-mails.
++  config.mailer = "UserMailer"
++
++  # ==> ORM configuration
++  # Load and configure the ORM. Supports :active_record (default) and
++  # :mongoid (bson_ext recommended) by default. Other ORMs may be
++  # available as additional gems.
++  require 'devise/orm/active_record'
++
++  # ==> Configuration for any authentication mechanism
++  # Configure which keys are used when authenticating a user. The default is
++  # just :email. You can configure it to use [:username, :subdomain], so for
++  # authenticating a user, both parameters are required. Remember that those
++  # parameters are used only when authenticating and not when retrieving from
++  # session. If you need permissions, you should implement that in a before filter.
++  # You can also supply a hash where the value is a boolean determining whether
++  # or not authentication should be aborted when the value is not present.
++  config.authentication_keys = [ :login ]
++
++  # Configure parameters from the request object used for authentication. Each entry
++  # given should be a request method and it will automatically be passed to the
++  # find_for_authentication method and considered in your model lookup. For instance,
++  # if you set :request_keys to [:subdomain], :subdomain will be used on authentication.
++  # The same considerations mentioned for authentication_keys also apply to request_keys.
++  # config.request_keys = []
++
++  # Configure which authentication keys should be case-insensitive.
++  # These keys will be downcased upon creating or modifying a user and when used
++  # to authenticate or find a user. Default is :email.
++  config.case_insensitive_keys = [ :login ]
++
++  # Configure which authentication keys should have whitespace stripped.
++  # These keys will have whitespace before and after removed upon creating or
++  # modifying a user and when used to authenticate or find a user. Default is :email.
++  config.strip_whitespace_keys = [ :login ]
++
++  # Tell if authentication through request.params is enabled. True by default.
++  # config.params_authenticatable = true
++
++  # Tell if authentication through HTTP Basic Auth is enabled. False by default.
++  # config.http_authenticatable = false
++
++  # If http headers should be returned for AJAX requests. True by default.
++  # config.http_authenticatable_on_xhr = true
++
++  # The realm used in Http Basic Authentication. "Application" by default.
++  # config.http_authentication_realm = "Application"
++
++  # It will change confirmation, password recovery and other workflows
++  # to behave the same regardless if the e-mail provided was right or wrong.
++  # Does not affect registerable.
++  # config.paranoid = true
++
++  # ==> Configuration for :database_authenticatable
++  # For bcrypt, this is the cost for hashing the password and defaults to 10. If
++  # using other encryptors, it sets how many times you want the password re-encrypted.
++  #
++  # Limiting the stretches to just one in testing will increase the performance of
++  # your test suite dramatically. However, it is STRONGLY RECOMMENDED to not use
++  # a value less than 10 in other environments.
++  config.stretches = Rails.env.test? ? 1 : 10
++
++  # Setup a pepper to generate the encrypted password.
++  # config.pepper = "4455e1fd85fdf5466887857306d7b57ce8bce91d136e2de8e18afb546c5dd9fac24ee996cd84f32b2b9b7cbc9b5079644d14739c76964bc212d8857d8fdd3029"
++
++  # ==> Configuration for :confirmable
++  # A period that the user is allowed to access the website even without
++  # confirming his account. For instance, if set to 2.days, the user will be
++  # able to access the website for two days without confirming his account,
++  # access will be blocked just in the third day. Default is 0.days, meaning
++  # the user cannot access the website without confirming his account.
++  # config.confirm_within = 2.days
++
++  # Defines which key will be used when confirming an account
++  # config.confirmation_keys = [ :email ]
++
++  # ==> Configuration for :rememberable
++  # The time the user will be remembered without asking for credentials again.
++  # config.remember_for = 2.weeks
++
++  # If true, a valid remember token can be re-used between multiple browsers.
++  # config.remember_across_browsers = true
++
++  # If true, extends the user's remember period when remembered via cookie.
++  # config.extend_remember_period = false
++
++  # If true, uses the password salt as remember token. This should be turned
++  # to false if you are not using database authenticatable.
++  config.use_salt_as_remember_token = true
++
++  # Options to be passed to the created cookie. For instance, you can set
++  # :secure => true in order to force SSL only cookies.
++  # config.cookie_options = {}
++
++  # ==> Configuration for :validatable
++  # Range for password length. Default is 6..128.
++  # config.password_length = 6..128
++
++  # Email regex used to validate email formats. It simply asserts that
++  # an one (and only one) @ exists in the given string. This is mainly
++  # to give user feedback and not to assert the e-mail validity.
++  # config.email_regexp = /\A[^@]+@[^@]+\z/
++
++  # ==> Configuration for :timeoutable
++  # The time you want to timeout the user session without activity. After this
++  # time the user will be asked for credentials again. Default is 30 minutes.
++  # config.timeout_in = 30.minutes
++
++  # ==> Configuration for :lockable
++  # Defines which strategy will be used to lock an account.
++  # :failed_attempts = Locks an account after a number of failed attempts to sign in.
++  # :none            = No lock strategy. You should handle locking by yourself.
++  # config.lock_strategy = :failed_attempts
++
++  # Defines which key will be used when locking and unlocking an account
++  # config.unlock_keys = [ :email ]
++
++  # Defines which strategy will be used to unlock an account.
++  # :email = Sends an unlock link to the user email
++  # :time  = Re-enables login after a certain amount of time (see :unlock_in below)
++  # :both  = Enables both strategies
++  # :none  = No unlock strategy. You should handle unlocking by yourself.
++  # config.unlock_strategy = :both
++
++  # Number of authentication tries before locking an account if lock_strategy
++  # is failed attempts.
++  # config.maximum_attempts = 20
++
++  # Time interval to unlock the account if :time is enabled as unlock_strategy.
++  # config.unlock_in = 1.hour
++
++  # ==> Configuration for :recoverable
++  #
++  # Defines which key will be used when recovering the password for an account
++  # config.reset_password_keys = [ :email ]
++
++  # Time interval you can reset your password with a reset password key.
++  # Don't put a too small interval or your users won't have the time to
++  # change their passwords.
++  config.reset_password_within = 2.hours
++
++  # ==> Configuration for :encryptable
++  # Allow you to use another encryption algorithm besides bcrypt (default). You can use
++  # :sha1, :sha512 or encryptors from others authentication tools as :clearance_sha1,
++  # :authlogic_sha512 (then you should set stretches above to 20 for default behavior)
++  # and :restful_authentication_sha1 (then you should set stretches to 10, and copy
++  # REST_AUTH_SITE_KEY to pepper)
++  # config.encryptor = :sha512
++
++  # ==> Configuration for :token_authenticatable
++  # Defines name of the authentication token params key
++  # config.token_authentication_key = :auth_token
++
++  # If true, authentication through token does not store user in session and needs
++  # to be supplied on each request. Useful if you are using the token as API token.
++  # config.stateless_token = false
++
++  # ==> Scopes configuration
++  # Turn scoped views on. Before rendering "sessions/new", it will first check for
++  # "users/sessions/new". It's turned off by default because it's slower if you
++  # are using only default views.
++  # config.scoped_views = false
++
++  # Configure the default scope given to Warden. By default it's the first
++  # devise role declared in your routes (usually :user).
++  # config.default_scope = :user
++
++  # Configure sign_out behavior.
++  # Sign_out action can be scoped (i.e. /users/sign_out affects only :user scope).
++  # The default is true, which means any logout action will sign out all active scopes.
++  # config.sign_out_all_scopes = true
++
++  # ==> Navigation configuration
++  # Lists the formats that should be treated as navigational. Formats like
++  # :html, should redirect to the sign in page when the user does not have
++  # access, but formats like :xml or :json, should return 401.
++  #
++  # If you have any extra navigational formats, like :iphone or :mobile, you
++  # should add them to the navigational formats lists.
++  #
++  # The :"*/*" and "*/*" formats below is required to match Internet
++  # Explorer requests.
++  # config.navigational_formats = [:"*/*", "*/*", :html]
++
++  # The default HTTP method used to sign out a resource. Default is :delete.
++  config.sign_out_via = :delete
++
++  # ==> OmniAuth
++  # Add a new OmniAuth provider. Check the wiki for more information on setting
++  # up on your models and hooks.
++  # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
++
++  # ==> Warden configuration
++  # If you want to use other strategies, that are not supported by Devise, or
++  # change the failure app, you can configure them inside the config.warden block.
++  #
++  # config.warden do |manager|
++  #   manager.failure_app   = AnotherApp
++  #   manager.intercept_401 = false
++  #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
++  # end
++end
+
+
+diff --git a/config/initializers/simple_form.rb b/config/initializers/simple_form.rb
+new file mode 100644
+index 0000000..fb3eb0f
+--- /dev/null
++++ b/config/initializers/simple_form.rb
+@@ -0,0 +1 @@
++SimpleForm.browser_validations = false
+\ No newline at end of file
+
+
+diff --git a/config/locales/devise.en.yml b/config/locales/devise.en.yml
+new file mode 100644
+index 0000000..b182635
+--- /dev/null
++++ b/config/locales/devise.en.yml
+@@ -0,0 +1,58 @@
++# Additional translations at http://github.com/plataformatec/devise/wiki/I18n
++
++en:
++  errors:
++    messages:
++      expired: "has expired, please request a new one"
++      not_found: "not found"
++      already_confirmed: "was already confirmed, please try signing in"
++      not_locked: "was not locked"
++      not_saved:
++        one: "1 error prohibited this %{resource} from being saved:"
++        other: "%{count} errors prohibited this %{resource} from being saved:"
++
++  devise:
++    failure:
++      already_authenticated: 'You are already signed in.'
++      unauthenticated: 'You need to sign in or sign up before continuing.'
++      unconfirmed: 'You have to confirm your account before continuing.'
++      locked: 'Your account is locked.'
++      invalid: 'Invalid email or password.'
++      invalid_token: 'Invalid authentication token.'
++      timeout: 'Your session expired, please sign in again to continue.'
++      inactive: 'Your account was not activated yet.'
++    sessions:
++      signed_in: 'Signed in successfully.'
++      signed_out: 'Signed out successfully.'
++    passwords:
++      send_instructions: 'You will receive an email with instructions about how to reset your password in a few minutes.'
++      updated: 'Your password was changed successfully. You are now signed in.'
++      updated_not_active: 'Your password was changed successfully.'
++      send_paranoid_instructions: "If your e-mail exists on our database, you will receive a password recovery link on your e-mail"
++    confirmations:
++      send_instructions: 'You will receive an email with instructions about how to confirm your account in a few minutes.'
++      send_paranoid_instructions: 'If your e-mail exists on our database, you will receive an email with instructions about how to confirm your account in a few minutes.'
++      confirmed: 'Your account was successfully confirmed. You are now signed in.'
++    registrations:
++      signed_up: 'Welcome! You have signed up successfully.'
++      inactive_signed_up: 'You have signed up successfully. However, we could not sign you in because your account is %{reason}.'
++      updated: 'You updated your account successfully.'
++      destroyed: 'Bye! Your account was successfully cancelled. We hope to see you again soon.'
++      reasons:
++        inactive: 'inactive'
++        unconfirmed: 'unconfirmed'
++        locked: 'locked'
++    unlocks:
++      send_instructions: 'You will receive an email with instructions about how to unlock your account in a few minutes.'
++      unlocked: 'Your account was successfully unlocked. You are now signed in.'
++      send_paranoid_instructions: 'If your account exists, you will receive an email with instructions about how to unlock it in a few minutes.'
++    omniauth_callbacks:
++      success: 'Successfully authorized from %{kind} account.'
++      failure: 'Could not authorize you from %{kind} because "%{reason}".'
++    mailer:
++      confirmation_instructions:
++        subject: 'Confirmation instructions'
++      reset_password_instructions:
++        subject: 'Reset password instructions'
++      unlock_instructions:
++        subject: 'Unlock Instructions'
+
+
+diff --git a/config/routes.rb b/config/routes.rb
+index adf32f3..76108a0 100644
+--- a/config/routes.rb
++++ b/config/routes.rb
+@@ -1,58 +1,19 @@
+ Mgr::Application.routes.draw do
+-  # The priority is based upon order of creation:
+-  # first created -> highest priority.
+ 
+-  # Sample of regular route:
+-  #   match 'products/:id' => 'catalog#view'
+-  # Keep in mind you can assign values other than :controller and :action
++  resources :posts
+ 
+-  # Sample of named route:
+-  #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
+-  # This route can be invoked with purchase_url(:id => product.id)
++  root :to => 'home#index'
+ 
+-  # Sample resource route (maps HTTP verbs to controller actions automatically):
+-  #   resources :products
++  get "home/index"
+ 
+-  # Sample resource route with options:
+-  #   resources :products do
+-  #     member do
+-  #       get 'short'
+-  #       post 'toggle'
+-  #     end
+-  #
+-  #     collection do
+-  #       get 'sold'
+-  #     end
+-  #   end
++  devise_for :users
++    
++  devise_scope :user do
++    get "/login" => "devise/sessions#new"
++    get "/logout" => "devise/sessions#destroy"
++  end
+ 
+-  # Sample resource route with sub-resources:
+-  #   resources :products do
+-  #     resources :comments, :sales
+-  #     resource :seller
+-  #   end
++  get "/forum" => "posts#index"
++  
+ 
+-  # Sample resource route with more complex sub-resources
+-  #   resources :products do
+-  #     resources :comments
+-  #     resources :sales do
+-  #       get 'recent', :on => :collection
+-  #     end
+-  #   end
+-
+-  # Sample resource route within a namespace:
+-  #   namespace :admin do
+-  #     # Directs /admin/products/* to Admin::ProductsController
+-  #     # (app/controllers/admin/products_controller.rb)
+-  #     resources :products
+-  #   end
+-
+-  # You can have the root of your site routed with "root"
+-  # just remember to delete public/index.html.
+-  # root :to => 'welcome#index'
+-
+-  # See how all your routes lay out with "rake routes"
+-
+-  # This is a legacy wild controller route that's not recommended for RESTful applications.
+-  # Note: This route will make all actions in every controller accessible via GET requests.
+-  # match ':controller(/:action(/:id(.:format)))'
+ end
+
+
+diff --git a/db/migrate/20111029130908_devise_create_users.rb b/db/migrate/20111029130908_devise_create_users.rb
+new file mode 100644
+index 0000000..781dbe7
+--- /dev/null
++++ b/db/migrate/20111029130908_devise_create_users.rb
+@@ -0,0 +1,31 @@
++class DeviseCreateUsers < ActiveRecord::Migration
++  def self.up
++    create_table(:users) do |t|
++      t.database_authenticatable :null => false
++      t.recoverable
++      t.rememberable
++      t.trackable
++
++      # t.encryptable
++      # t.confirmable
++      # t.lockable :lock_strategy => :failed_attempts, :unlock_strategy => :both
++      # t.token_authenticatable
++
++      t.string :login, :null => false
++
++      t.timestamps
++    end
++
++    add_index :users, :email,                :unique => true
++    add_index :users, :login,                :unique => true
++    add_index :users, :reset_password_token, :unique => true
++
++    # add_index :users, :confirmation_token,   :unique => true
++    # add_index :users, :unlock_token,         :unique => true
++    # add_index :users, :authentication_token, :unique => true
++  end
++
++  def self.down
++    drop_table :users
++  end
++end
+
+
+diff --git a/db/migrate/20111228172221_create_posts.rb b/db/migrate/20111228172221_create_posts.rb
+new file mode 100644
+index 0000000..67f4b0d
+--- /dev/null
++++ b/db/migrate/20111228172221_create_posts.rb
+@@ -0,0 +1,10 @@
++class CreatePosts < ActiveRecord::Migration
++  def change
++    create_table :posts do |t|
++      t.integer :user_id
++      t.text :content
++
++      t.timestamps
++    end
++  end
++end
+
+
+diff --git a/db/schema.rb b/db/schema.rb
+new file mode 100644
+index 0000000..9926b4a
+--- /dev/null
++++ b/db/schema.rb
+@@ -0,0 +1,43 @@
++# encoding: UTF-8
++# This file is auto-generated from the current state of the database. Instead
++# of editing this file, please use the migrations feature of Active Record to
++# incrementally modify your database, and then regenerate this schema definition.
++#
++# Note that this schema.rb definition is the authoritative source for your
++# database schema. If you need to create the application database on another
++# system, you should be using db:schema:load, not running all the migrations
++# from scratch. The latter is a flawed and unsustainable approach (the more migrations
++# you'll amass, the slower it'll run and the greater likelihood for issues).
++#
++# It's strongly recommended to check this file into your version control system.
++
++ActiveRecord::Schema.define(:version => 20111228172221) do
++
++  create_table "posts", :force => true do |t|
++    t.integer  "user_id"
++    t.text     "content"
++    t.datetime "created_at"
++    t.datetime "updated_at"
++  end
++
++  create_table "users", :force => true do |t|
++    t.string   "email",                                 :default => "", :null => false
++    t.string   "encrypted_password",     :limit => 128, :default => "", :null => false
++    t.string   "reset_password_token"
++    t.datetime "reset_password_sent_at"
++    t.datetime "remember_created_at"
++    t.integer  "sign_in_count",                         :default => 0
++    t.datetime "current_sign_in_at"
++    t.datetime "last_sign_in_at"
++    t.string   "current_sign_in_ip"
++    t.string   "last_sign_in_ip"
++    t.string   "login",                                                 :null => false
++    t.datetime "created_at"
++    t.datetime "updated_at"
++  end
++
++  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
++  add_index "users", ["login"], :name => "index_users_on_login", :unique => true
++  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
++
++end
+
+
+diff --git a/doc/UML/authorization.gaphor b/doc/UML/authorization.gaphor
+new file mode 100644
+index 0000000..f567261
+--- /dev/null
++++ b/doc/UML/authorization.gaphor
+@@ -0,0 +1,189 @@
++<?xml version="1.0" encoding="utf-8"?>
++<gaphor xmlns="http://gaphor.sourceforge.net/model" version="3.0" gaphor-version="0.15.0">
++<Package id="55244958-0278-11e1-8c66-0016ead88cd2">
++<name>
++<val><![CDATA[New model]]></val>
++</name>
++<ownedClassifier>
++<reflist>
++<ref refid="5737bf68-0278-11e1-8c66-0016ead88cd2"/>
++<ref refid="58e01716-0278-11e1-8c66-0016ead88cd2"/>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</ownedClassifier>
++<ownedDiagram>
++<reflist>
++<ref refid="55276732-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</ownedDiagram>
++</Package>
++<Diagram id="55276732-0278-11e1-8c66-0016ead88cd2">
++<name>
++<val><![CDATA[main]]></val>
++</name>
++<package>
++<ref refid="55244958-0278-11e1-8c66-0016ead88cd2"/>
++</package>
++<canvas>
++<item type="ActorItem" id="5739805a-0278-11e1-8c66-0016ead88cd2">
++<drawing-style>
++<val>3</val>
++</drawing-style>
++<matrix>
++<val>(1.0, 0.0, 0.0, 1.0, 126.0, 179.0)</val>
++</matrix>
++<width>
++<val>38.0</val>
++</width>
++<height>
++<val>60.0</val>
++</height>
++<subject>
++<ref refid="5737bf68-0278-11e1-8c66-0016ead88cd2"/>
++</subject>
++<show_stereotypes_attrs>
++<val>0</val>
++</show_stereotypes_attrs>
++</item>
++<item type="UseCaseItem" id="58e06cc0-0278-11e1-8c66-0016ead88cd2">
++<drawing-style>
++<val>-1</val>
++</drawing-style>
++<matrix>
++<val>(1.0, 0.0, 0.0, 1.0, 375.0, 132.0)</val>
++</matrix>
++<width>
++<val>120.0</val>
++</width>
++<height>
++<val>53.0</val>
++</height>
++<subject>
++<ref refid="58e01716-0278-11e1-8c66-0016ead88cd2"/>
++</subject>
++<show_stereotypes_attrs>
++<val>0</val>
++</show_stereotypes_attrs>
++</item>
++<item type="AssociationItem" id="5a12865a-0278-11e1-8c66-0016ead88cd2">
++<subject>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</subject>
++<show_stereotypes_attrs>
++<val>0</val>
++</show_stereotypes_attrs>
++<matrix>
++<val>(1.0, 0.0, 0.0, 1.0, 164.0, 217.0)</val>
++</matrix>
++<orthogonal>
++<val>0</val>
++</orthogonal>
++<horizontal>
++<val>0</val>
++</horizontal>
++<points>
++<val>[(0.0, 0.0), (211.0, -56.73333333333335)]</val>
++</points>
++<head-connection>
++<ref refid="5739805a-0278-11e1-8c66-0016ead88cd2"/>
++</head-connection>
++<tail-connection>
++<ref refid="58e06cc0-0278-11e1-8c66-0016ead88cd2"/>
++</tail-connection>
++<show-direction>
++<val>0</val>
++</show-direction>
++<head-subject>
++<ref refid="5b35bc1e-0278-11e1-8c66-0016ead88cd2"/>
++</head-subject>
++<tail-subject>
++<ref refid="5b3629ba-0278-11e1-8c66-0016ead88cd2"/>
++</tail-subject>
++</item>
++</canvas>
++</Diagram>
++<Actor id="5737bf68-0278-11e1-8c66-0016ead88cd2">
++<name>
++<val><![CDATA[NewActor]]></val>
++</name>
++<package>
++<ref refid="55244958-0278-11e1-8c66-0016ead88cd2"/>
++</package>
++<presentation>
++<reflist>
++<ref refid="5739805a-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</presentation>
++</Actor>
++<UseCase id="58e01716-0278-11e1-8c66-0016ead88cd2">
++<name>
++<val><![CDATA[NewUseCase]]></val>
++</name>
++<package>
++<ref refid="55244958-0278-11e1-8c66-0016ead88cd2"/>
++</package>
++<presentation>
++<reflist>
++<ref refid="58e06cc0-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</presentation>
++</UseCase>
++<Association id="5b3589c4-0278-11e1-8c66-0016ead88cd2">
++<memberEnd>
++<reflist>
++<ref refid="5b35bc1e-0278-11e1-8c66-0016ead88cd2"/>
++<ref refid="5b3629ba-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</memberEnd>
++<ownedEnd>
++<reflist>
++<ref refid="5b35bc1e-0278-11e1-8c66-0016ead88cd2"/>
++<ref refid="5b3629ba-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</ownedEnd>
++<package>
++<ref refid="55244958-0278-11e1-8c66-0016ead88cd2"/>
++</package>
++<presentation>
++<reflist>
++<ref refid="5a12865a-0278-11e1-8c66-0016ead88cd2"/>
++</reflist>
++</presentation>
++</Association>
++<Property id="5b35bc1e-0278-11e1-8c66-0016ead88cd2">
++<association>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</association>
++<lowerValue>
++<ref refid="5b35da28-0278-11e1-8c66-0016ead88cd2"/>
++</lowerValue>
++<owningAssociation>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</owningAssociation>
++<presentation>
++<reflist/>
++</presentation>
++<type>
++<ref refid="58e01716-0278-11e1-8c66-0016ead88cd2"/>
++</type>
++</Property>
++<LiteralSpecification id="5b35da28-0278-11e1-8c66-0016ead88cd2"/>
++<Property id="5b3629ba-0278-11e1-8c66-0016ead88cd2">
++<association>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</association>
++<lowerValue>
++<ref refid="5b363432-0278-11e1-8c66-0016ead88cd2"/>
++</lowerValue>
++<owningAssociation>
++<ref refid="5b3589c4-0278-11e1-8c66-0016ead88cd2"/>
++</owningAssociation>
++<presentation>
++<reflist/>
++</presentation>
++<type>
++<ref refid="5737bf68-0278-11e1-8c66-0016ead88cd2"/>
++</type>
++</Property>
++<LiteralSpecification id="5b363432-0278-11e1-8c66-0016ead88cd2"/>
++</gaphor>
+\ No newline at end of file
+
+
+diff --git a/features/forum.feature b/features/forum.feature
+new file mode 100644
+index 0000000..ebc489b
+--- /dev/null
++++ b/features/forum.feature
+@@ -0,0 +1,30 @@
++# language: pl
++Właściwość: Używanie forum
++  
++  Scenariusz: Widoczność forum dla użytkowników
++    Zakładając że nie jestem zalogowany
++    Oraz że widzę odnośnik "Forum"
++    Jeżeli kliknę odnośnik "Forum"
++    Wtedy trafię na stronę "forum"
++    Oraz będę widział listę postów
++
++  Scenariusz: dostęp do forum jako zalogowany użytkownik
++    Zakładając że jestem zalogowany jako użytkownik "ellmo"
++    Oraz że jestem na stronie "forum"
++    Oraz że widzę odnośnik "New post"
++    Jeżeli kliknę odnośnik "New post"
++    Wtedy trafię na stronę "new_post"
++    Oraz będę widział formularz dodawania posta
++
++  Scenariusz: dostęp do forum jako niezalogowany użytkownik
++    Zakładając że nie jestem zalogowany
++    Oraz że jestem na stronie "forum"
++    Wtedy nie będę widział odnośnika "New post"
++
++  Scenariusz: dostęp do forum jako zalogowany użytkownik
++    Zakładając że jestem zalogowany jako użytkownik "ellmo"
++    Oraz że jestem na stronie "new_post"
++    Jeżeli wypełnię pole "post_content" tekstem "testowy tekst testowy"
++    Oraz kliknę przycisk "Post"
++    Wtedy trafię na stronę "forum"
++    Oraz będę widział post "testowy tekst testowy" na liście postów
+
+
+diff --git a/features/login_register.feature b/features/login_register.feature
+new file mode 100644
+index 0000000..38fde7c
+--- /dev/null
++++ b/features/login_register.feature
+@@ -0,0 +1,85 @@
++# language: pl
++Właściwość: Uwierzytelnianie i Rejestracja
++  W celu zapewnienia elementarnego bezpieczeństwa
++  Jako użytkownik
++  Chcę mieć możliwość uwierzytelniania i autoryzacji moich poczynań
++
++  Scenariusz: Widoczność formularza logowania
++    Zakładając że jestem na stronie "root"
++    Oraz że widzę odnośnik "Sign in"
++    Jeżeli kliknę odnośnik "Sign in"
++    Wtedy trafię na stronę "sign_in"
++    Oraz będę widział formularz logowania
++
++  Szablon scenariusza: logowanie emailem LUB loginem
++    Zakładając że mamy danych użytkowników
++      | email                   | login | password   |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123   |
++    Oraz że jestem na stronie "sign_in"
++    Jeżeli wypełnię formularz logowania danymi
++      | user_login       | user_password   |
++      | <login_or_email> | <pass>          |
++    Oraz kliknę przycisk "Sign in"
++    Wtedy trafię na stronę "root"
++    Oraz będę widział informację "Zalogowałeś się jako ellmo"
++
++    Przykłady:
++      | login_or_email          | pass     |
++      | ellmo                   | haslo123 |
++      | jkb.zuchowski@gmail.com | haslo123 |
++  
++  Szablon scenariusza: błędne logowanie
++    Zakładając że mamy danych użytkowników
++      | email                   | login | password   |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123   |
++    Oraz że jestem na stronie "sign_in"
++    Jeżeli wypełnię formularz logowania danymi
++      | user_login       | user_password   |
++      | <login_or_email> | <pass>          |
++    Oraz kliknę przycisk "Sign in"
++    Wtedy trafię na stronę "sign_in"
++    Oraz będę widział informację o błędach
++
++    Przykłady:
++      | login_or_email          | pass        |
++      | niepoprawny             | haslo123    |
++      | ellmo                   | niepoprawne |
++  
++  Scenariusz: Widoczność formularza rejestracji
++    Zakładając że jestem na stronie "root"
++    Oraz że widzę odnośnik "Sign up"
++    Jeżeli kliknę odnośnik "Sign up"
++    Wtedy trafię na stronę "sign_up"
++    Oraz będę widział formularz rejestracji
++
++  Scenariusz: Poprawne rejestrowanie
++    Zakładając że jestem na stronie "sign_up"
++    Jeżeli wypełnię formularz rejestracji danymi
++      | email                   | login | password |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123 |
++    Oraz kliknę przycisk "Register"
++    Wtedy trafię na stronę "root"
++    Oraz w bazie danych znajdzie się użytkownik "ellmo"
++    Oraz będę widział informację "Zalogowałeś się jako ellmo"
++
++  Szablon scenariusza: Niepoprawne rejestrowanie
++    Zakładając że mamy danych użytkowników
++      | email                   | login | password   |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123   |
++    Oraz że liczba użytkowników wynosi "1"
++    Oraz że jestem na stronie "sign_up"
++    Jeżeli wypełnię formularz rejestracji danymi
++      | email   | login   | password   |
++      | <email> | <login> | <password> |
++    Oraz kliknę przycisk "Register"
++    Wtedy trafię na stronę "sign_up"
++    Oraz w bazie danych nie znajdzie się nowy użytkownik
++    Oraz będę widział informację o błędach
++
++    Przykłady:
++      | email                   | login | password |
++      |                         | ellmo | haslo123 |
++      | jkb.zuchowski@gmail.com |       | haslo123 |  
++      | jkb.zuchowski@gmail.com |       |          |  
++      | niepoprawny_adres       | ellmo | haslo123 |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123 |
+
+
+diff --git a/features/mailer.feature b/features/mailer.feature
+new file mode 100644
+index 0000000..da73a95
+--- /dev/null
++++ b/features/mailer.feature
+@@ -0,0 +1,33 @@
++# language: pl
++Właściwość: Zautomatyzowana poczta
++  W celu zapewnienia możliwości odzyskiwania konta
++  Jako użytkownik
++  Chcę mieć możliwość resetowania hasła na wypadek, gdybym je zapomniał
++
++  Scenariusz: Widoczność formularza odzyskiwania konta
++    Zakładając że jestem na stronie "sign_in"
++    Oraz że widzę odnośnik "Forgot your password?"
++    Jeżeli kliknę odnośnik "Forgot your password?"
++    Wtedy trafię na stronę "new_user_password"
++    Oraz będę widział formularz odzyskiwania konta
++
++  Scenariusz: Próba odzyskania konta za pomocą poprawnych kredencjałów
++    Zakładając że mamy danych użytkowników
++      | email                   | login | password   |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123   |
++    Oraz że jestem na stronie "new_user_password"
++    Oraz że mailer jest przygotowany
++    Jeżeli wypełnię pole "user_email" tekstem "jkb.zuchowski@gmail.com"
++    Oraz kliknę przycisk "Send me reset password instructions"
++    Wtedy zostanie wysłany email
++
++  Scenariusz: Próba odzyskania konta za pomocą niepoprawnych kredencjałów
++    Zakładając że mamy danych użytkowników
++      | email                   | login | password   |
++      | jkb.zuchowski@gmail.com | ellmo | haslo123   |
++    Oraz że jestem na stronie "new_user_password"
++    Oraz że mailer jest przygotowany
++    Jeżeli wypełnię pole "user_email" tekstem "niepoprawny@gmail.com"
++    Oraz kliknę przycisk "Send me reset password instructions"
++    Wtedy nie zostanie wysłany email
++    Oraz będę widział informację o błędach
+
+
+diff --git a/features/step_definitions/common_steps.rb b/features/step_definitions/common_steps.rb
+new file mode 100644
+index 0000000..4b8db30
+--- /dev/null
++++ b/features/step_definitions/common_steps.rb
+@@ -0,0 +1,71 @@
++#encoding: utf-8
++
++Zakładając /^że nie jestem zalogowany$/ do
++  visit '/logout'
++end
++
++Zakładając /^że jestem zalogowany jako użytkownik "(.+)"$/ do |login|
++  email = 'jkb.zuchowski@gmail.com'
++  password = 'haslo123'
++  User.new(:login => login, :email => email, :password => password, :password_confirmation => password).save!
++
++  visit '/users/sign_in'
++  fill_in "user_login", :with => email
++  fill_in "user_password", :with => password
++  click_button "Sign in"
++end
++
++Zakładając /^że mamy danych użytkowników$/ do |table|
++  table.hashes.each do |hash|
++    Factory(:user, hash)
++  end
++end
++
++Zakładając /^że liczba użytkowników wynosi "(.+)"$/ do |number|
++  @user_count = User.count
++  @user_count.should == number.to_i
++end
++
++Zakładając /^że jestem na stronie "(.+)"$/ do |arg1|
++  steps "Given I am on #{arg1}"
++end
++
++Zakładając /^że widzę odnośnik "(.+)"$/ do |link|
++  page.should have_link(link)
++end
++
++Jeżeli /^kliknę odnośnik "(.+)"$/ do |link|
++  click_link(link)
++end
++
++Jeżeli /^kliknę przycisk "(.+)"$/ do |button|
++  click_button(button)
++end
++
++Jeżeli /^wypełnię pole "(.+)" tekstem "(.+)"$/ do |field, value|
++  fill_in(field, :with => value)
++end
++
++Wtedy /^trafię na stronę "(.+)"$/ do |page_name|
++  assert_equal path_to(page_name), current_path
++end
++
++Wtedy /^w bazie danych znajdzie się użytkownik "(.+)"$/ do |login|
++  User.find_by_login(login).should_not be_nil
++end
++
++Wtedy /^w bazie danych nie znajdzie się nowy użytkownik$/ do
++  @user_count.should == User.count
++end
++
++Wtedy /^będę widział informację "(.+)"$/ do |msg|
++  page.should have_content(msg)
++end
++
++Wtedy /^nie będę widział odnośnika "(.+)"$/ do |link|
++  page.should_not have_link(link)
++end
++
++Wtedy /^będę widział informację o błędach$/ do
++  page.should have_selector(".alert")
++end
+\ No newline at end of file
+
+
+diff --git a/features/step_definitions/forum_steps.rb b/features/step_definitions/forum_steps.rb
+new file mode 100644
+index 0000000..b5e397a
+--- /dev/null
++++ b/features/step_definitions/forum_steps.rb
+@@ -0,0 +1,13 @@
++#encoding: utf-8
++
++Wtedy /^będę widział listę postów$/ do
++  page.should have_selector("#posts_list")
++end
++
++Wtedy /^będę widział formularz dodawania posta$/ do
++  page.should have_selector("form#new_post")
++end
++
++Wtedy /^będę widział post "(.+)" na liście postów$/ do |post|
++  page.should have_content(post)
++end
+
+
+diff --git a/features/step_definitions/login_register_steps.rb b/features/step_definitions/login_register_steps.rb
+new file mode 100644
+index 0000000..ee494e8
+--- /dev/null
++++ b/features/step_definitions/login_register_steps.rb
+@@ -0,0 +1,26 @@
++#encoding: utf-8
++
++Jeżeli /^wypełnię formularz logowania danymi$/ do |table|
++  table.hashes.each_with_index do |hash, index|
++    fill_in("user_login", :with => hash[:user_login] )
++    fill_in("user_password", :with => hash[:user_password])
++    save_and_open_page
++  end
++end
++
++Jeżeli /^wypełnię formularz rejestracji danymi$/ do |table|
++  table.hashes.each_with_index do |hash, index|
++    fill_in("user_email", :with => hash[:email])
++    fill_in("user_login", :with => hash[:login])
++    fill_in("user_password", :with => hash[:password])
++    fill_in("user_password_confirmation", :with => hash[:password])
++  end
++end
++
++Wtedy /^będę widział formularz logowania$/ do
++  page.should have_selector("form#user_new")
++end
++
++Wtedy /^będę widział formularz rejestracji$/ do
++  page.should have_selector("form#user_new")
++end
+
+
+diff --git a/features/step_definitions/mailer_steps.rb b/features/step_definitions/mailer_steps.rb
+new file mode 100644
+index 0000000..f053dfb
+--- /dev/null
++++ b/features/step_definitions/mailer_steps.rb
+@@ -0,0 +1,20 @@
++#encoding: utf-8
++
++Zakładając /^że mailer jest przygotowany$/ do
++  ActionMailer::Base.delivery_method = :test
++  ActionMailer::Base.perform_deliveries = true
++  ActionMailer::Base.raise_delivery_errors = true
++  ActionMailer::Base.deliveries.clear
++end
++
++Wtedy /^będę widział formularz odzyskiwania konta$/ do
++  page.should have_selector("form#user_new")
++end
++
++Wtedy /^zostanie wysłany email$/ do
++  ActionMailer::Base.deliveries.should_not be_empty
++end
++
++Wtedy /^nie zostanie wysłany email$/ do
++  ActionMailer::Base.deliveries.should be_empty
++end
+\ No newline at end of file
+
+
+diff --git a/features/step_definitions/web_steps.rb b/features/step_definitions/web_steps.rb
+new file mode 100644
+index 0000000..534df3d
+--- /dev/null
++++ b/features/step_definitions/web_steps.rb
+@@ -0,0 +1,213 @@
++# TL;DR: YOU SHOULD DELETE THIS FILE
++#
++# This file was generated by Cucumber-Rails and is only here to get you a head start
++# These step definitions are thin wrappers around the Capybara/Webrat API that lets you
++# visit pages, interact with widgets and make assertions about page content.
++#
++# If you use these step definitions as basis for your features you will quickly end up
++# with features that are:
++#
++# * Hard to maintain
++# * Verbose to read
++#
++# A much better approach is to write your own higher level step definitions, following
++# the advice in the following blog posts:
++#
++# * http://benmabey.com/2008/05/19/imperative-vs-declarative-scenarios-in-user-stories.html
++# * http://dannorth.net/2011/01/31/whose-domain-is-it-anyway/
++# * http://elabs.se/blog/15-you-re-cuking-it-wrong
++#
++
++
++require 'uri'
++require 'cgi'
++require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "paths"))
++require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "selectors"))
++
++module WithinHelpers
++  def with_scope(locator)
++    locator ? within(*selector_for(locator)) { yield } : yield
++  end
++end
++World(WithinHelpers)
++
++# Single-line step scoper
++When /^(.*) within (.*[^:])$/ do |step, parent|
++  with_scope(parent) { When step }
++end
++
++# Multi-line step scoper
++When /^(.*) within (.*[^:]):$/ do |step, parent, table_or_string|
++  with_scope(parent) { When "#{step}:", table_or_string }
++end
++
++#zmieniałem z regexa "[^"]*"
++
++Given /^(?:|I )am on (.+)$/ do |page_name|
++  visit path_to(page_name)
++end
++
++When /^(?:|I )go to (.+)$/ do |page_name|
++  visit path_to(page_name)
++end
++
++When /^(?:|I )press "(.+)"$/ do |button|
++  click_button(button)
++end
++
++When /^(?:|I )follow "(.+)"$/ do |link|
++  click_link(link)
++end
++
++When /^(?:|I )fill in "(.+)" with "(.+)"$/ do |field, value|
++  fill_in(field, :with => value)
++end
++
++When /^(?:|I )fill in "(.+)" for "(.+)"$/ do |value, field|
++  fill_in(field, :with => value)
++end
++
++# Use this to fill in an entire form with data from a table. Example:
++#
++#   When I fill in the following:
++#     | Account Number | 5002       |
++#     | Expiry date    | 2009-11-01 |
++#     | Note           | Nice guy   |
++#     | Wants Email?   |            |
++#
++# TODO: Add support for checkbox, select og option
++# based on naming conventions.
++
++When /^(?:|I )fill in the following:$/ do |fields|
++  fields.rows_hash.each do |name, value|
++    When %{I fill in "#{name}" with "#{value}"}
++  end
++end
++
++When /^(?:|I )select "(.+)" from "(.+)"$/ do |value, field|
++  select(value, :from => field)
++end
++
++When /^(?:|I )check "(.+)"$/ do |field|
++  check(field)
++end
++
++When /^(?:|I )uncheck "(.+)"$/ do |field|
++  uncheck(field)
++end
++
++When /^(?:|I )choose "(.+)"$/ do |field|
++  choose(field)
++end
++
++When /^(?:|I )attach the file "(.+)" to "(.+)"$/ do |path, field|
++  attach_file(field, File.expand_path(path))
++end
++
++Then /^(?:|I )should see "(.+)"$/ do |text|
++  if page.respond_to? :should
++    page.should have_content(text)
++  else
++    assert page.has_content?(text)
++  end
++end
++
++Then /^(?:|I )should see \/([^\/]*)\/$/ do |regexp|
++  regexp = Regexp.new(regexp)
++
++  if page.respond_to? :should
++    page.should have_xpath('//*', :text => regexp)
++  else
++    assert page.has_xpath?('//*', :text => regexp)
++  end
++end
++
++Then /^(?:|I )should not see "(.+)"$/ do |text|
++  if page.respond_to? :should
++    page.should have_no_content(text)
++  else
++    assert page.has_no_content?(text)
++  end
++end
++
++Then /^(?:|I )should not see \/([^\/]*)\/$/ do |regexp|
++  regexp = Regexp.new(regexp)
++
++  if page.respond_to? :should
++    page.should have_no_xpath('//*', :text => regexp)
++  else
++    assert page.has_no_xpath?('//*', :text => regexp)
++  end
++end
++
++Then /^the "(.+)" field(?: within (.*))? should contain "(.+)"$/ do |field, parent, value|
++  with_scope(parent) do
++    field = find_field(field)
++    field_value = (field.tag_name == 'textarea') ? field.text : field.value
++    if field_value.respond_to? :should
++      field_value.should =~ /#{value}/
++    else
++      assert_match(/#{value}/, field_value)
++    end
++  end
++end
++
++Then /^the "(.+)" field(?: within (.*))? should not contain "(.+)"$/ do |field, parent, value|
++  with_scope(parent) do
++    field = find_field(field)
++    field_value = (field.tag_name == 'textarea') ? field.text : field.value
++    if field_value.respond_to? :should_not
++      field_value.should_not =~ /#{value}/
++    else
++      assert_no_match(/#{value}/, field_value)
++    end
++  end
++end
++
++Then /^the "(.+)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
++  with_scope(parent) do
++    field_checked = find_field(label)['checked']
++    if field_checked.respond_to? :should
++      field_checked.should be_true
++    else
++      assert field_checked
++    end
++  end
++end
++
++Then /^the "(.+)" checkbox(?: within (.*))? should not be checked$/ do |label, parent|
++  with_scope(parent) do
++    field_checked = find_field(label)['checked']
++    if field_checked.respond_to? :should
++      field_checked.should be_false
++    else
++      assert !field_checked
++    end
++  end
++end
++ 
++Then /^(?:|I )should be on (.+)$/ do |page_name|
++  current_path = URI.parse(current_url).path
++  if current_path.respond_to? :should
++    current_path.should == path_to(page_name)
++  else
++    assert_equal path_to(page_name), current_path
++  end
++end
++
++Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
++  query = URI.parse(current_url).query
++  actual_params = query ? CGI.parse(query) : {}
++  expected_params = {}
++  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')} 
++  
++  if actual_params.respond_to? :should
++    actual_params.should == expected_params
++  else
++    assert_equal expected_params, actual_params
++  end
++end
++
++Then /^show me the page$/ do
++  save_and_open_page
++end
+
+
+diff --git a/features/support/env.rb b/features/support/env.rb
+new file mode 100644
+index 0000000..6c40c8f
+--- /dev/null
++++ b/features/support/env.rb
+@@ -0,0 +1,50 @@
++# IMPORTANT: This file is generated by cucumber-rails - edit at your own peril.
++# It is recommended to regenerate this file in the future when you upgrade to a 
++# newer version of cucumber-rails. Consider adding your own code to a new file 
++# instead of editing this one. Cucumber will automatically load all features/**/*.rb
++# files.
++
++require 'cucumber/rails'
++
++# Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
++# order to ease the transition to Capybara we set the default here. If you'd
++# prefer to use XPath just remove this line and adjust any selectors in your
++# steps to use the XPath syntax.
++Capybara.default_selector = :css
++
++# By default, any exception happening in your Rails application will bubble up
++# to Cucumber so that your scenario will fail. This is a different from how 
++# your application behaves in the production environment, where an error page will 
++# be rendered instead.
++#
++# Sometimes we want to override this default behaviour and allow Rails to rescue
++# exceptions and display an error page (just like when the app is running in production).
++# Typical scenarios where you want to do this is when you test your error pages.
++# There are two ways to allow Rails to rescue exceptions:
++#
++# 1) Tag your scenario (or feature) with @allow-rescue
++#
++# 2) Set the value below to true. Beware that doing this globally is not
++# recommended as it will mask a lot of errors for you!
++#
++ActionController::Base.allow_rescue = false
++
++# Remove/comment out the lines below if your app doesn't have a database.
++# For some databases (like MongoDB and CouchDB) you may need to use :truncation instead.
++begin
++  DatabaseCleaner.strategy = :transaction
++rescue NameError
++  raise "You need to add database_cleaner to your Gemfile (in the :test group) if you wish to use it."
++end
++
++# You may also want to configure DatabaseCleaner to use different strategies for certain features and scenarios.
++# See the DatabaseCleaner documentation for details. Example:
++#
++#   Before('@no-txn,@selenium,@culerity,@celerity,@javascript') do
++#     DatabaseCleaner.strategy = :truncation, {:except => %w[widgets]}
++#   end
++#
++#   Before('~@no-txn', '~@selenium', '~@culerity', '~@celerity', '~@javascript') do
++#     DatabaseCleaner.strategy = :transaction
++#   end
++#
+
+
+diff --git a/features/support/paths.rb b/features/support/paths.rb
+new file mode 100644
+index 0000000..f38d197
+--- /dev/null
++++ b/features/support/paths.rb
+@@ -0,0 +1,28 @@
++module NavigationHelpers
++
++  def path_to(page_name)
++    case page_name
++
++    when "root"
++      root_path
++    when "sign_in"
++      new_user_session_path
++    when "sign_up"
++      new_user_registration_path
++    when "new_user_password"
++      new_user_password_path
++
++    else
++      begin
++        page_name =~ /^(.*)$/
++        path_components = $1.split(/\s+/)
++        self.send(path_components.push('path').join('_').to_sym)
++      rescue NoMethodError, ArgumentError
++        raise "Can't find mapping from \"#{page_name}\" to a path.\n" +
++          "Now, go and add a mapping in #{__FILE__}"
++      end
++    end
++  end
++end
++
++World(NavigationHelpers)
+
+
+diff --git a/features/support/selectors.rb b/features/support/selectors.rb
+new file mode 100644
+index 0000000..44e34a4
+--- /dev/null
++++ b/features/support/selectors.rb
+@@ -0,0 +1,39 @@
++module HtmlSelectorsHelpers
++  # Maps a name to a selector. Used primarily by the
++  #
++  #   When /^(.+) within (.+)$/ do |step, scope|
++  #
++  # step definitions in web_steps.rb
++  #
++  def selector_for(locator)
++    case locator
++
++    when "the page"
++      "html > body"
++
++    # Add more mappings here.
++    # Here is an example that pulls values out of the Regexp:
++    #
++    #  when /^the (notice|error|info) flash$/
++    #    ".flash.#{$1}"
++
++    # You can also return an array to use a different selector
++    # type, like:
++    #
++    #  when /the header/
++    #    [:xpath, "//header"]
++
++    # This allows you to provide a quoted selector as the scope
++    # for "within" steps as was previously the default for the
++    # web steps:
++    when /^"(.+)"$/
++      $1
++
++    else
++      raise "Can't find mapping from \"#{locator}\" to a selector.\n" +
++        "Now, go and add a mapping in #{__FILE__}"
++    end
++  end
++end
++
++World(HtmlSelectorsHelpers)
+
+
+diff --git a/lib/tasks/cucumber.rake b/lib/tasks/cucumber.rake
+new file mode 100644
+index 0000000..83f7947
+--- /dev/null
++++ b/lib/tasks/cucumber.rake
+@@ -0,0 +1,65 @@
++# IMPORTANT: This file is generated by cucumber-rails - edit at your own peril.
++# It is recommended to regenerate this file in the future when you upgrade to a 
++# newer version of cucumber-rails. Consider adding your own code to a new file 
++# instead of editing this one. Cucumber will automatically load all features/**/*.rb
++# files.
++
++
++unless ARGV.any? {|a| a =~ /^gems/} # Don't load anything when running the gems:* tasks
++
++vendored_cucumber_bin = Dir["#{Rails.root}/vendor/{gems,plugins}/cucumber*/bin/cucumber"].first
++$LOAD_PATH.unshift(File.dirname(vendored_cucumber_bin) + '/../lib') unless vendored_cucumber_bin.nil?
++
++begin
++  require 'cucumber/rake/task'
++
++  namespace :cucumber do
++    Cucumber::Rake::Task.new({:ok => 'db:test:prepare'}, 'Run features that should pass') do |t|
++      t.binary = vendored_cucumber_bin # If nil, the gem's binary is used.
++      t.fork = true # You may get faster startup if you set this to false
++      t.profile = 'default'
++    end
++
++    Cucumber::Rake::Task.new({:wip => 'db:test:prepare'}, 'Run features that are being worked on') do |t|
++      t.binary = vendored_cucumber_bin
++      t.fork = true # You may get faster startup if you set this to false
++      t.profile = 'wip'
++    end
++
++    Cucumber::Rake::Task.new({:rerun => 'db:test:prepare'}, 'Record failing features and run only them if any exist') do |t|
++      t.binary = vendored_cucumber_bin
++      t.fork = true # You may get faster startup if you set this to false
++      t.profile = 'rerun'
++    end
++
++    desc 'Run all features'
++    task :all => [:ok, :wip]
++
++    task :statsetup do
++      require 'rails/code_statistics'
++      ::STATS_DIRECTORIES << %w(Cucumber\ features features) if File.exist?('features')
++      ::CodeStatistics::TEST_TYPES << "Cucumber features" if File.exist?('features')
++    end
++  end
++  desc 'Alias for cucumber:ok'
++  task :cucumber => 'cucumber:ok'
++
++  task :default => :cucumber
++
++  task :features => :cucumber do
++    STDERR.puts "*** The 'features' task is deprecated. See rake -T cucumber ***"
++  end
++
++  # In case we don't have ActiveRecord, append a no-op task that we can depend upon.
++  task 'db:test:prepare' do
++  end
++
++  task :stats => 'cucumber:statsetup'
++rescue LoadError
++  desc 'cucumber rake task not available (cucumber not installed)'
++  task :cucumber do
++    abort 'Cucumber rake task is not available. Be sure to install cucumber as a gem or plugin'
++  end
++end
++
++end
+
+
+diff --git a/public/404.html b/public/404.html
+deleted file mode 100644
+index 9a48320..0000000
+--- a/public/404.html
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <title>The page you were looking for doesn't exist (404)</title>
+-  <style type="text/css">
+-    body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
+-    div.dialog {
+-      width: 25em;
+-      padding: 0 4em;
+-      margin: 4em auto 0 auto;
+-      border: 1px solid #ccc;
+-      border-right-color: #999;
+-      border-bottom-color: #999;
+-    }
+-    h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
+-  </style>
+-</head>
+-
+-<body>
+-  <!-- This file lives in public/404.html -->
+-  <div class="dialog">
+-    <h1>The page you were looking for doesn't exist.</h1>
+-    <p>You may have mistyped the address or the page may have moved.</p>
+-  </div>
+-</body>
+-</html>
+
+
+diff --git a/public/404.html.haml b/public/404.html.haml
+new file mode 100644
+index 0000000..4747bfe
+--- /dev/null
++++ b/public/404.html.haml
+@@ -0,0 +1,20 @@
++!!!
++%html
++  %head
++    %title The page you were looking for doesn't exist (404)
++    :css
++      body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
++      div.dialog {
++        width: 25em;
++        padding: 0 4em;
++        margin: 4em auto 0 auto;
++        border: 1px solid #ccc;
++        border-right-color: #999;
++        border-bottom-color: #999;
++      }
++      h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
++    %body
++    / This file lives in public/404.html
++    .dialog
++      %h1 The page you were looking for doesn't exist.
++      %p You may have mistyped the address or the page may have moved.
+\ No newline at end of file
+
+
+diff --git a/public/422.html b/public/422.html
+deleted file mode 100644
+index 83660ab..0000000
+--- a/public/422.html
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <title>The change you wanted was rejected (422)</title>
+-  <style type="text/css">
+-    body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
+-    div.dialog {
+-      width: 25em;
+-      padding: 0 4em;
+-      margin: 4em auto 0 auto;
+-      border: 1px solid #ccc;
+-      border-right-color: #999;
+-      border-bottom-color: #999;
+-    }
+-    h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
+-  </style>
+-</head>
+-
+-<body>
+-  <!-- This file lives in public/422.html -->
+-  <div class="dialog">
+-    <h1>The change you wanted was rejected.</h1>
+-    <p>Maybe you tried to change something you didn't have access to.</p>
+-  </div>
+-</body>
+-</html>
+
+
+diff --git a/public/422.html.haml b/public/422.html.haml
+new file mode 100644
+index 0000000..f2d3589
+--- /dev/null
++++ b/public/422.html.haml
+@@ -0,0 +1,20 @@
++!!!
++%html
++  %head
++    %title The change you wanted was rejected (422)
++    :css
++      body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
++      div.dialog {
++        width: 25em;
++        padding: 0 4em;
++        margin: 4em auto 0 auto;
++        border: 1px solid #ccc;
++        border-right-color: #999;
++        border-bottom-color: #999;
++      }
++      h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
++    %body
++    / This file lives in public/422.html
++    .dialog
++      %h1 The change you wanted was rejected.
++      %p Maybe you tried to change something you didn't have access to.
+\ No newline at end of file
+
+
+diff --git a/public/500.html b/public/500.html
+deleted file mode 100644
+index b80307f..0000000
+--- a/public/500.html
++++ /dev/null
+@@ -1,26 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <title>We're sorry, but something went wrong (500)</title>
+-  <style type="text/css">
+-    body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
+-    div.dialog {
+-      width: 25em;
+-      padding: 0 4em;
+-      margin: 4em auto 0 auto;
+-      border: 1px solid #ccc;
+-      border-right-color: #999;
+-      border-bottom-color: #999;
+-    }
+-    h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
+-  </style>
+-</head>
+-
+-<body>
+-  <!-- This file lives in public/500.html -->
+-  <div class="dialog">
+-    <h1>We're sorry, but something went wrong.</h1>
+-    <p>We've been notified about this issue and we'll take a look at it shortly.</p>
+-  </div>
+-</body>
+-</html>
+
+
+diff --git a/public/500.html.haml b/public/500.html.haml
+new file mode 100644
+index 0000000..1f0ae35
+--- /dev/null
++++ b/public/500.html.haml
+@@ -0,0 +1,20 @@
++!!!
++%html
++  %head
++    %title We're sorry, but something went wrong (500)
++    :css
++      body { background-color: #fff; color: #666; text-align: center; font-family: arial, sans-serif; }
++      div.dialog {
++        width: 25em;
++        padding: 0 4em;
++        margin: 4em auto 0 auto;
++        border: 1px solid #ccc;
++        border-right-color: #999;
++        border-bottom-color: #999;
++      }
++      h1 { font-size: 100%; color: #f00; line-height: 1.5em; }
++    %body
++    / This file lives in public/500.html
++    .dialog
++      %h1 We're sorry, but something went wrong.
++      %p We've been notified about this issue and we'll take a look at it shortly.
+\ No newline at end of file
+
+
+diff --git a/public/index.html b/public/index.html
+deleted file mode 100644
+index 9d9811a..0000000
+--- a/public/index.html
++++ /dev/null
+@@ -1,241 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-  <head>
+-    <title>Ruby on Rails: Welcome aboard</title>
+-    <style type="text/css" media="screen">
+-      body {
+-        margin: 0;
+-        margin-bottom: 25px;
+-        padding: 0;
+-        background-color: #f0f0f0;
+-        font-family: "Lucida Grande", "Bitstream Vera Sans", "Verdana";
+-        font-size: 13px;
+-        color: #333;
+-      }
+-
+-      h1 {
+-        font-size: 28px;
+-        color: #000;
+-      }
+-
+-      a  {color: #03c}
+-      a:hover {
+-        background-color: #03c;
+-        color: white;
+-        text-decoration: none;
+-      }
+-
+-
+-      #page {
+-        background-color: #f0f0f0;
+-        width: 750px;
+-        margin: 0;
+-        margin-left: auto;
+-        margin-right: auto;
+-      }
+-
+-      #content {
+-        float: left;
+-        background-color: white;
+-        border: 3px solid #aaa;
+-        border-top: none;
+-        padding: 25px;
+-        width: 500px;
+-      }
+-
+-      #sidebar {
+-        float: right;
+-        width: 175px;
+-      }
+-
+-      #footer {
+-        clear: both;
+-      }
+-
+-      #header, #about, #getting-started {
+-        padding-left: 75px;
+-        padding-right: 30px;
+-      }
+-
+-
+-      #header {
+-        background-image: url("/assets/rails.png");
+-        background-repeat: no-repeat;
+-        background-position: top left;
+-        height: 64px;
+-      }
+-      #header h1, #header h2 {margin: 0}
+-      #header h2 {
+-        color: #888;
+-        font-weight: normal;
+-        font-size: 16px;
+-      }
+-
+-
+-      #about h3 {
+-        margin: 0;
+-        margin-bottom: 10px;
+-        font-size: 14px;
+-      }
+-
+-      #about-content {
+-        background-color: #ffd;
+-        border: 1px solid #fc0;
+-        margin-left: -55px;
+-        margin-right: -10px;
+-      }
+-      #about-content table {
+-        margin-top: 10px;
+-        margin-bottom: 10px;
+-        font-size: 11px;
+-        border-collapse: collapse;
+-      }
+-      #about-content td {
+-        padding: 10px;
+-        padding-top: 3px;
+-        padding-bottom: 3px;
+-      }
+-      #about-content td.name  {color: #555}
+-      #about-content td.value {color: #000}
+-
+-      #about-content ul {
+-        padding: 0;
+-        list-style-type: none;
+-      }
+-
+-      #about-content.failure {
+-        background-color: #fcc;
+-        border: 1px solid #f00;
+-      }
+-      #about-content.failure p {
+-        margin: 0;
+-        padding: 10px;
+-      }
+-
+-
+-      #getting-started {
+-        border-top: 1px solid #ccc;
+-        margin-top: 25px;
+-        padding-top: 15px;
+-      }
+-      #getting-started h1 {
+-        margin: 0;
+-        font-size: 20px;
+-      }
+-      #getting-started h2 {
+-        margin: 0;
+-        font-size: 14px;
+-        font-weight: normal;
+-        color: #333;
+-        margin-bottom: 25px;
+-      }
+-      #getting-started ol {
+-        margin-left: 0;
+-        padding-left: 0;
+-      }
+-      #getting-started li {
+-        font-size: 18px;
+-        color: #888;
+-        margin-bottom: 25px;
+-      }
+-      #getting-started li h2 {
+-        margin: 0;
+-        font-weight: normal;
+-        font-size: 18px;
+-        color: #333;
+-      }
+-      #getting-started li p {
+-        color: #555;
+-        font-size: 13px;
+-      }
+-
+-
+-      #sidebar ul {
+-        margin-left: 0;
+-        padding-left: 0;
+-      }
+-      #sidebar ul h3 {
+-        margin-top: 25px;
+-        font-size: 16px;
+-        padding-bottom: 10px;
+-        border-bottom: 1px solid #ccc;
+-      }
+-      #sidebar li {
+-        list-style-type: none;
+-      }
+-      #sidebar ul.links li {
+-        margin-bottom: 5px;
+-      }
+-
+-      .filename {
+-        font-style: italic;
+-      }
+-    </style>
+-    <script type="text/javascript">
+-      function about() {
+-        info = document.getElementById('about-content');
+-        if (window.XMLHttpRequest)
+-          { xhr = new XMLHttpRequest(); }
+-        else
+-          { xhr = new ActiveXObject("Microsoft.XMLHTTP"); }
+-        xhr.open("GET","rails/info/properties",false);
+-        xhr.send("");
+-        info.innerHTML = xhr.responseText;
+-        info.style.display = 'block'
+-      }
+-    </script>
+-  </head>
+-  <body>
+-    <div id="page">
+-      <div id="sidebar">
+-        <ul id="sidebar-items">
+-          <li>
+-            <h3>Browse the documentation</h3>
+-            <ul class="links">
+-              <li><a href="http://guides.rubyonrails.org/">Rails Guides</a></li>
+-              <li><a href="http://api.rubyonrails.org/">Rails API</a></li>
+-              <li><a href="http://www.ruby-doc.org/core/">Ruby core</a></li>
+-              <li><a href="http://www.ruby-doc.org/stdlib/">Ruby standard library</a></li>
+-            </ul>
+-          </li>
+-        </ul>
+-      </div>
+-
+-      <div id="content">
+-        <div id="header">
+-          <h1>Welcome aboard</h1>
+-          <h2>You&rsquo;re riding Ruby on Rails!</h2>
+-        </div>
+-
+-        <div id="about">
+-          <h3><a href="rails/info/properties" onclick="about(); return false">About your application&rsquo;s environment</a></h3>
+-          <div id="about-content" style="display: none"></div>
+-        </div>
+-
+-        <div id="getting-started">
+-          <h1>Getting started</h1>
+-          <h2>Here&rsquo;s how to get rolling:</h2>
+-
+-          <ol>
+-            <li>
+-              <h2>Use <code>rails generate</code> to create your models and controllers</h2>
+-              <p>To see all available options, run it without parameters.</p>
+-            </li>
+-
+-            <li>
+-              <h2>Set up a default route and remove <span class="filename">public/index.html</span></h2>
+-              <p>Routes are set up in <span class="filename">config/routes.rb</span>.</p>
+-            </li>
+-
+-            <li>
+-              <h2>Create your database</h2>
+-              <p>Run <code>rake db:create</code> to create your database. If you're not using SQLite (the default), edit <span class="filename">config/database.yml</span> with your username and password.</p>
+-            </li>
+-          </ol>
+-        </div>
+-      </div>
+-
+-      <div id="footer">&nbsp;</div>
+-    </div>
+-  </body>
+-</html>
+
+
+diff --git a/script/cucumber b/script/cucumber
+new file mode 100755
+index 0000000..7fa5c92
+--- /dev/null
++++ b/script/cucumber
+@@ -0,0 +1,10 @@
++#!/usr/bin/env ruby
++
++vendored_cucumber_bin = Dir["#{File.dirname(__FILE__)}/../vendor/{gems,plugins}/cucumber*/bin/cucumber"].first
++if vendored_cucumber_bin
++  load File.expand_path(vendored_cucumber_bin)
++else
++  require 'rubygems' unless ENV['NO_RUBYGEMS']
++  require 'cucumber'
++  load Cucumber::BINARY
++end
+
+
+diff --git a/spec/controllers/home_controller_spec.rb b/spec/controllers/home_controller_spec.rb
+new file mode 100644
+index 0000000..403a70f
+--- /dev/null
++++ b/spec/controllers/home_controller_spec.rb
+@@ -0,0 +1,12 @@
++require 'spec_helper'
++
++describe HomeController do
++
++  describe "GET 'index'" do
++    it "returns http success" do
++      get 'index'
++      response.should be_success
++    end
++  end
++
++end
+
+
+diff --git a/spec/controllers/posts_controller_spec.rb b/spec/controllers/posts_controller_spec.rb
+new file mode 100644
+index 0000000..eab8d08
+--- /dev/null
++++ b/spec/controllers/posts_controller_spec.rb
+@@ -0,0 +1,157 @@
++require 'spec_helper'
++
++# This spec was generated by rspec-rails when you ran the scaffold generator.
++# It demonstrates how one might use RSpec to specify the controller code that
++# was generated by Rails when you ran the scaffold generator.
++#
++# It assumes that the implementation code is generated by the rails scaffold
++# generator.  If you are using any extension libraries to generate different
++# controller code, this generated spec may or may not pass.
++#
++# It only uses APIs available in rails and/or rspec-rails.  There are a number
++# of tools you can use to make these specs even more expressive, but we're
++# sticking to rails and rspec-rails APIs to keep things simple and stable.
++#
++# Compared to earlier versions of this generator, there is very limited use of
++# stubs and message expectations in this spec.  Stubs are only used when there
++# is no simpler way to get a handle on the object needed for the example.
++# Message expectations are only used when there is no simpler way to specify
++# that an instance is receiving a specific message.
++
++describe PostsController do
++
++  # This should return the minimal set of attributes required to create a valid
++  # Post. As you add validations to Post, be sure to
++  # update the return value of this method accordingly.
++  def valid_attributes
++    {}
++  end
++
++  describe "GET index" do
++    it "assigns all posts as @posts" do
++      post = Post.create! valid_attributes
++      get :index
++      assigns(:posts).should eq([post])
++    end
++  end
++
++  describe "GET show" do
++    it "assigns the requested post as @post" do
++      post = Post.create! valid_attributes
++      get :show, :id => post.id
++      assigns(:post).should eq(post)
++    end
++  end
++
++  describe "GET new" do
++    it "assigns a new post as @post" do
++      get :new
++      assigns(:post).should be_a_new(Post)
++    end
++  end
++
++  describe "GET edit" do
++    it "assigns the requested post as @post" do
++      post = Post.create! valid_attributes
++      get :edit, :id => post.id
++      assigns(:post).should eq(post)
++    end
++  end
++
++  describe "POST create" do
++    describe "with valid params" do
++      it "creates a new Post" do
++        expect {
++          post :create, :post => valid_attributes
++        }.to change(Post, :count).by(1)
++      end
++
++      it "assigns a newly created post as @post" do
++        post :create, :post => valid_attributes
++        assigns(:post).should be_a(Post)
++        assigns(:post).should be_persisted
++      end
++
++      it "redirects to the created post" do
++        post :create, :post => valid_attributes
++        response.should redirect_to(Post.last)
++      end
++    end
++
++    describe "with invalid params" do
++      it "assigns a newly created but unsaved post as @post" do
++        # Trigger the behavior that occurs when invalid params are submitted
++        Post.any_instance.stub(:save).and_return(false)
++        post :create, :post => {}
++        assigns(:post).should be_a_new(Post)
++      end
++
++      it "re-renders the 'new' template" do
++        # Trigger the behavior that occurs when invalid params are submitted
++        Post.any_instance.stub(:save).and_return(false)
++        post :create, :post => {}
++        response.should render_template("new")
++      end
++    end
++  end
++
++  describe "PUT update" do
++    describe "with valid params" do
++      it "updates the requested post" do
++        post = Post.create! valid_attributes
++        # Assuming there are no other posts in the database, this
++        # specifies that the Post created on the previous line
++        # receives the :update_attributes message with whatever params are
++        # submitted in the request.
++        Post.any_instance.should_receive(:update_attributes).with({'these' => 'params'})
++        put :update, :id => post.id, :post => {'these' => 'params'}
++      end
++
++      it "assigns the requested post as @post" do
++        post = Post.create! valid_attributes
++        put :update, :id => post.id, :post => valid_attributes
++        assigns(:post).should eq(post)
++      end
++
++      it "redirects to the post" do
++        post = Post.create! valid_attributes
++        put :update, :id => post.id, :post => valid_attributes
++        response.should redirect_to(post)
++      end
++    end
++
++    describe "with invalid params" do
++      it "assigns the post as @post" do
++        post = Post.create! valid_attributes
++        # Trigger the behavior that occurs when invalid params are submitted
++        Post.any_instance.stub(:save).and_return(false)
++        put :update, :id => post.id, :post => {}
++        assigns(:post).should eq(post)
++      end
++
++      it "re-renders the 'edit' template" do
++        post = Post.create! valid_attributes
++        # Trigger the behavior that occurs when invalid params are submitted
++        Post.any_instance.stub(:save).and_return(false)
++        put :update, :id => post.id, :post => {}
++        response.should render_template("edit")
++      end
++    end
++  end
++
++  describe "DELETE destroy" do
++    it "destroys the requested post" do
++      post = Post.create! valid_attributes
++      expect {
++        delete :destroy, :id => post.id
++      }.to change(Post, :count).by(-1)
++    end
++
++    it "redirects to the posts list" do
++      post = Post.create! valid_attributes
++      delete :destroy, :id => post.id
++      response.should redirect_to(posts_url)
++    end
++  end
++
++end
+
+
+diff --git a/spec/factories/posts.rb b/spec/factories/posts.rb
+new file mode 100644
+index 0000000..5e5cc62
+--- /dev/null
++++ b/spec/factories/posts.rb
+@@ -0,0 +1,8 @@
++# Read about factories at http://github.com/thoughtbot/factory_girl
++
++FactoryGirl.define do
++  factory :post do
++    user_id 1
++    content "MyText"
++  end
++end
+
+
+diff --git a/spec/factories/users.rb b/spec/factories/users.rb
+new file mode 100644
+index 0000000..0832da6
+--- /dev/null
++++ b/spec/factories/users.rb
+@@ -0,0 +1,6 @@
++Factory.define :user do |usr|
++  usr.sequence(:login) { |n| "user_#{n}" }
++  usr.sequence(:email) {|n| "user_#{n}@example.com"}
++  usr.password "jfhsdk2332"
++  usr.password_confirmation {|u| u.password}
++end
+
+
+\ No newline at end of file
+diff --git a/spec/helpers/home_helper_spec.rb b/spec/helpers/home_helper_spec.rb
+new file mode 100644
+index 0000000..4a37633
+--- /dev/null
++++ b/spec/helpers/home_helper_spec.rb
+@@ -0,0 +1,15 @@
++require 'spec_helper'
++
++# Specs in this file have access to a helper object that includes
++# the HomeHelper. For example:
++#
++# describe HomeHelper do
++#   describe "string concat" do
++#     it "concats two strings with spaces" do
++#       helper.concat_strings("this","that").should == "this that"
++#     end
++#   end
++# end
++describe HomeHelper do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/helpers/posts_helper_spec.rb b/spec/helpers/posts_helper_spec.rb
+new file mode 100644
+index 0000000..19a1e23
+--- /dev/null
++++ b/spec/helpers/posts_helper_spec.rb
+@@ -0,0 +1,15 @@
++require 'spec_helper'
++
++# Specs in this file have access to a helper object that includes
++# the PostsHelper. For example:
++#
++# describe PostsHelper do
++#   describe "string concat" do
++#     it "concats two strings with spaces" do
++#       helper.concat_strings("this","that").should == "this that"
++#     end
++#   end
++# end
++describe PostsHelper do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/mailers/user_mailer_spec.rb b/spec/mailers/user_mailer_spec.rb
+new file mode 100644
+index 0000000..8d004b3
+--- /dev/null
++++ b/spec/mailers/user_mailer_spec.rb
+@@ -0,0 +1,5 @@
++require "spec_helper"
++
++describe UserMailer do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/models/post_spec.rb b/spec/models/post_spec.rb
+new file mode 100644
+index 0000000..98c3a24
+--- /dev/null
++++ b/spec/models/post_spec.rb
+@@ -0,0 +1,5 @@
++require 'spec_helper'
++
++describe Post do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/models/user_spec.rb b/spec/models/user_spec.rb
+new file mode 100644
+index 0000000..44032b4
+--- /dev/null
++++ b/spec/models/user_spec.rb
+@@ -0,0 +1,5 @@
++require 'spec_helper'
++
++describe User do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/requests/posts_spec.rb b/spec/requests/posts_spec.rb
+new file mode 100644
+index 0000000..bbaf01e
+--- /dev/null
++++ b/spec/requests/posts_spec.rb
+@@ -0,0 +1,11 @@
++require 'spec_helper'
++
++describe "Posts" do
++  describe "GET /posts" do
++    it "works! (now write some real specs)" do
++      # Run the generator again with the --webrat flag if you want to use webrat methods/matchers
++      get posts_path
++      response.status.should be(200)
++    end
++  end
++end
+
+
+diff --git a/spec/routing/posts_routing_spec.rb b/spec/routing/posts_routing_spec.rb
+new file mode 100644
+index 0000000..0266d96
+--- /dev/null
++++ b/spec/routing/posts_routing_spec.rb
+@@ -0,0 +1,35 @@
++require "spec_helper"
++
++describe PostsController do
++  describe "routing" do
++
++    it "routes to #index" do
++      get("/posts").should route_to("posts#index")
++    end
++
++    it "routes to #new" do
++      get("/posts/new").should route_to("posts#new")
++    end
++
++    it "routes to #show" do
++      get("/posts/1").should route_to("posts#show", :id => "1")
++    end
++
++    it "routes to #edit" do
++      get("/posts/1/edit").should route_to("posts#edit", :id => "1")
++    end
++
++    it "routes to #create" do
++      post("/posts").should route_to("posts#create")
++    end
++
++    it "routes to #update" do
++      put("/posts/1").should route_to("posts#update", :id => "1")
++    end
++
++    it "routes to #destroy" do
++      delete("/posts/1").should route_to("posts#destroy", :id => "1")
++    end
++
++  end
++end
+
+
+diff --git a/spec/spec_helper.rb b/spec/spec_helper.rb
+new file mode 100644
+index 0000000..4b47600
+--- /dev/null
++++ b/spec/spec_helper.rb
+@@ -0,0 +1,35 @@
++# This file is copied to spec/ when you run 'rails generate rspec:install'
++ENV["RAILS_ENV"] ||= 'test'
++require File.expand_path("../../config/environment", __FILE__)
++require 'rspec/rails'
++require 'rspec/autorun'
++
++# Requires supporting ruby files with custom matchers and macros, etc,
++# in spec/support/ and its subdirectories.
++Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
++
++RSpec.configure do |config|
++  # == Mock Framework
++  #
++  # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
++  #
++  # config.mock_with :mocha
++  # config.mock_with :flexmock
++  # config.mock_with :rr
++  config.mock_with :rspec
++
++  config.include Devise::TestHelpers, :type => :controller
++
++  # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
++  config.fixture_path = "#{::Rails.root}/spec/fixtures"
++
++  # If you're not using ActiveRecord, or you'd prefer not to run each of your
++  # examples within a transaction, remove the following line or assign false
++  # instead of true.
++  config.use_transactional_fixtures = true
++
++  # If true, the base class of anonymous controllers will be inferred
++  # automatically. This will be the default behavior in future versions of
++  # rspec-rails.
++  config.infer_base_class_for_anonymous_controllers = false
++end
+
+
+diff --git a/spec/views/home/index.html.erb_spec.rb b/spec/views/home/index.html.erb_spec.rb
+new file mode 100644
+index 0000000..a7697f7
+--- /dev/null
++++ b/spec/views/home/index.html.erb_spec.rb
+@@ -0,0 +1,5 @@
++require 'spec_helper'
++
++describe "home/index.html.erb" do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/views/home/index.html.haml_spec.rb b/spec/views/home/index.html.haml_spec.rb
+new file mode 100644
+index 0000000..0397bc7
+--- /dev/null
++++ b/spec/views/home/index.html.haml_spec.rb
+@@ -0,0 +1,5 @@
++require 'spec_helper'
++
++describe "home/index.html.haml" do
++  pending "add some examples to (or delete) #{__FILE__}"
++end
+
+
+diff --git a/spec/views/posts/edit.html.haml_spec.rb b/spec/views/posts/edit.html.haml_spec.rb
+new file mode 100644
+index 0000000..9998102
+--- /dev/null
++++ b/spec/views/posts/edit.html.haml_spec.rb
+@@ -0,0 +1,20 @@
++require 'spec_helper'
++
++describe "posts/edit.html.haml" do
++  before(:each) do
++    @post = assign(:post, stub_model(Post,
++      :user_id => 1,
++      :content => "MyText"
++    ))
++  end
++
++  it "renders the edit post form" do
++    render
++
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    assert_select "form", :action => posts_path(@post), :method => "post" do
++      assert_select "input#post_user_id", :name => "post[user_id]"
++      assert_select "textarea#post_content", :name => "post[content]"
++    end
++  end
++end
+
+
+diff --git a/spec/views/posts/index.html.haml_spec.rb b/spec/views/posts/index.html.haml_spec.rb
+new file mode 100644
+index 0000000..bd93722
+--- /dev/null
++++ b/spec/views/posts/index.html.haml_spec.rb
+@@ -0,0 +1,24 @@
++require 'spec_helper'
++
++describe "posts/index.html.haml" do
++  before(:each) do
++    assign(:posts, [
++      stub_model(Post,
++        :user_id => 1,
++        :content => "MyText"
++      ),
++      stub_model(Post,
++        :user_id => 1,
++        :content => "MyText"
++      )
++    ])
++  end
++
++  it "renders a list of posts" do
++    render
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    assert_select "tr>td", :text => 1.to_s, :count => 2
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    assert_select "tr>td", :text => "MyText".to_s, :count => 2
++  end
++end
+
+
+diff --git a/spec/views/posts/new.html.haml_spec.rb b/spec/views/posts/new.html.haml_spec.rb
+new file mode 100644
+index 0000000..d8cd590
+--- /dev/null
++++ b/spec/views/posts/new.html.haml_spec.rb
+@@ -0,0 +1,20 @@
++require 'spec_helper'
++
++describe "posts/new.html.haml" do
++  before(:each) do
++    assign(:post, stub_model(Post,
++      :user_id => 1,
++      :content => "MyText"
++    ).as_new_record)
++  end
++
++  it "renders new post form" do
++    render
++
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    assert_select "form", :action => posts_path, :method => "post" do
++      assert_select "input#post_user_id", :name => "post[user_id]"
++      assert_select "textarea#post_content", :name => "post[content]"
++    end
++  end
++end
+
+
+diff --git a/spec/views/posts/show.html.haml_spec.rb b/spec/views/posts/show.html.haml_spec.rb
+new file mode 100644
+index 0000000..c4e8d00
+--- /dev/null
++++ b/spec/views/posts/show.html.haml_spec.rb
+@@ -0,0 +1,18 @@
++require 'spec_helper'
++
++describe "posts/show.html.haml" do
++  before(:each) do
++    @post = assign(:post, stub_model(Post,
++      :user_id => 1,
++      :content => "MyText"
++    ))
++  end
++
++  it "renders attributes in <p>" do
++    render
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    rendered.should match(/1/)
++    # Run the generator again with the --webrat flag if you want to use webrat matchers
++    rendered.should match(/MyText/)
++  end
++end
